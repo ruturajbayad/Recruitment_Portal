@@ -59,7 +59,7 @@ const userSchema = new mongoose.Schema(
       ref: "Department",
     },
     skills: {
-      type: String,
+      type: [skillSchema],
     },
     refreshToken: {
       type: String,
@@ -81,12 +81,13 @@ userSchema.methods.checkPassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.generateAuthToken = function () {
-  jwt.sign(
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
     {
       _id: this._id,
-      username: this.username,
       email: this.email,
+      username: this.username,
+      fullname: this.fullname,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {
@@ -95,7 +96,7 @@ userSchema.methods.generateAuthToken = function () {
   );
 };
 
-userSchema.methods.generateRefreshToken = function () {
+userSchema.methods.generateRefreshToken = async function () {
   return jwt.sign(
     {
       _id: this._id,
