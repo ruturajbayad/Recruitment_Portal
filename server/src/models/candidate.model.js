@@ -13,15 +13,14 @@ const candidateSchema = new mongoose.Schema(
     },
     experiance: {
       type: String,
-      required: true,
     },
     qualification: {
       type: String,
       required: true,
     },
     skills: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Skill",
+      type: Array,
+      required: true,
     },
     department: {
       type: mongoose.Schema.Types.ObjectId,
@@ -43,11 +42,10 @@ const candidateSchema = new mongoose.Schema(
     },
     resume: {
       type: String, // url of file
-      required: true,
+      // required: true,
     },
     feedback: {
       type: String,
-      required: true,
     },
     isSelected: {
       type: Boolean,

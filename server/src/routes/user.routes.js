@@ -3,6 +3,7 @@ import {
   getUserDetails,
   loginUeser,
   logoutUser,
+  refreshAccessToken,
   registerUser,
   updateUserDetails,
 } from "../controllers/user.controller.js";
@@ -13,6 +14,7 @@ router.route("/register").post(registerUser);
 router.route("/login").post(loginUeser);
 router.route("/logout").post(verifyJwt, logoutUser);
 router.route("/userData").get(verifyJwt, getUserDetails);
-router.route("/updateDetails").post(verifyJwt, updateUserDetails);
+router.route("/updateDetails").patch(verifyJwt, updateUserDetails);
+router.route("/refreshAccessToken").post(refreshAccessToken);
 
 export default router;
