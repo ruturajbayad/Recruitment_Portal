@@ -5,7 +5,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
@@ -23,13 +23,15 @@ app.use(cookieParser());
 //! Router Import
 import userRouter from "./routes/user.routes.js";
 import candidateRouter from "./routes/candidate.routes.js";
+import departmentRouter from "./routes/department.routes.js";
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/candidates", candidateRouter);
+app.use("/api/v1/department", departmentRouter);
 
 export { app };
 
 //* For testing purposes
-// app.get("/", (req, res) => {
-//   res.send("hello Ruturaj");
-// });
+app.get("/", (req, res) => {
+  res.send("Error404");
+});

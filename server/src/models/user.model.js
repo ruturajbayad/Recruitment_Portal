@@ -2,32 +2,8 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const skillSchema = new mongoose.Schema(
-  {
-    skillName: {
-      type: String,
-      required: true,
-    },
-    department: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Department",
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
-
 const userSchema = new mongoose.Schema(
   {
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trime: true,
-      index: true,
-    },
     email: {
       type: String,
       required: true,
@@ -35,7 +11,13 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trime: true,
     },
-    fullname: {
+    firstName: {
+      type: String,
+      required: true,
+      trime: true,
+      index: true,
+    },
+    lastName: {
       type: String,
       required: true,
       trime: true,
@@ -49,17 +31,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    role: {
+    UserRole: {
       type: String,
-      enum: ["admin", "HR", "Employ"],
-      default: "Employ",
-    },
-    department: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Department",
-    },
-    skills: {
-      type: [skillSchema],
+      enum: ["admin", "HR", "Technical Person"],
+      default: "Technical Person",
     },
     refreshToken: {
       type: String,
@@ -74,7 +49,7 @@ userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   this.password = await bcrypt.hash(this.password, 10);
-  return next();
+  next();
 });
 
 userSchema.methods.checkPassword = async function (password) {
@@ -109,4 +84,3 @@ userSchema.methods.generateRefreshToken = async function () {
 };
 
 export const User = mongoose.model("User", userSchema);
-export const Skill = mongoose.model("Skill", skillSchema);

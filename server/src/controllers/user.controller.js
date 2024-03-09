@@ -3,7 +3,11 @@ import { ApiResponce } from "../utils/apiResponce.js";
 import { ApiError } from "../utils/apiError.js";
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import { mailer } from "../utils/nodeMailer.js";
+import { Department } from "../models/department.model.js";
+import { UserDepartmentSchema } from "../models/userDepartment.model.js";
 
+//! For JWT gerneration purposes
 const generateAccessTokenAndRefreshToken = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -24,33 +28,60 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
   }
 };
 
-const registerUser = asyncHandler(async (req, res) => {
-  const { fullname, email, password, username, role, department, skills } =
+//? All User Controllers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// ! ADD USER
+const addUser = asyncHandler(async (req, res) => {
+  const { firstName, lastName, email, password, UserRole, departments } =
     req.body;
 
+  // console.log(firstName, lastName, email, password, UserRole, departments);
+
   if (
-    [email, password, username, fullname].some((feild) => feild?.trim() === "")
+    [email, password, firstName, lastName].some((feild) => feild?.trim() === "")
   ) {
     throw new ApiError(400, "All required fields");
   }
 
-  const existedUser = await User.findOne({
-    $or: [{ email }, { username }],
-  });
+  const existedUser = await User.findOne({ email });
 
   if (existedUser) {
     throw new ApiError(400, "user is already registered");
   }
 
+  if (departments.length < 0) {
+    throw new ApiError(400, "All required fields");
+  }
+
   const user = await User.create({
-    fullname,
+    firstName,
     email,
     password,
-    username,
-    role,
-    department,
-    skills,
+    lastName,
+    UserRole,
   });
+
+  const userDepartment = departments.map(async (departmentobj) => {
+    const department = await Department.findById(departmentobj);
+
+    if (!department) {
+      throw new ApiError(400, "Department not found");
+    }
+
+    const departmentID = department._id;
+    const userID = user._id;
+    const userDepartment = await UserDepartmentSchema.create({
+      userID,
+      departmentID,
+    });
+
+    if (!userDepartment) {
+      throw new ApiError(500, "Internal server error");
+    }
+
+    return userDepartment;
+  });
+
   const createdUser = await User.findOne(user._id).select(
     " -password -refreshToken "
   );
@@ -61,19 +92,24 @@ const registerUser = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponce(200, createdUser, "User created successfully"));
+    .json(
+      new ApiResponce(
+        200,
+        { createdUser, userDepartment },
+        "User created successfully"
+      )
+    );
 });
 
+// ! LOGIN USER
 const loginUeser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!(username || email)) {
+  if (!email) {
     throw new ApiError(401, "Email or Username must require");
   }
 
-  const user = await User.findOne({
-    $or: [{ email }, { username }],
-  });
+  const user = await User.findOne({ email });
 
   if (!user) {
     throw new ApiError(404, "User Not found");
@@ -113,6 +149,7 @@ const loginUeser = asyncHandler(async (req, res) => {
     );
 });
 
+// ! LOGOUT USER
 const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
@@ -137,12 +174,14 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponce(200, {}, "User Loged Out Sccessfully"));
 });
 
+// ! GET USER DATA
 const getUserDetails = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponce(200, req.user, "User details fetched successfully"));
 });
 
+// ! UPDATE USER DATA
 const updateUserDetails = asyncHandler(async (req, res) => {
   const { fullname, email } = req.body;
 
@@ -170,6 +209,7 @@ const updateUserDetails = asyncHandler(async (req, res) => {
     );
 });
 
+// ! REFRESG ACCESSTOKEN
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
@@ -218,11 +258,67 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     );
 });
 
+// ! FORGOT PASSWORD MAIL
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email }).select(" -password -refreshToken");
+  if (!user) {
+    throw new ApiError(404, "User not Found");
+  }
+
+  const token = jwt.sign({ id: user._id }, process.env.RESET_TOKEN_SECRET, {
+    expiresIn: "10000",
+  });
+
+  const response = mailer(user.email, user._id, token);
+
+  if (!response) {
+    throw new ApiError(500, "Something went wrong with password reset link");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponce(200, {}, "Password reset link sent to your email"));
+});
+
+// ! RESER PASSWORD
+const resetPassword = asyncHandler(async (req, res) => {
+  const { id, token } = req.params;
+  const { newPassword } = req.body;
+
+  jwt.verify(token, process.env.RESET_TOKEN_SECRET);
+
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+  return res
+    .status(200)
+    .json(new ApiResponce(200, {}, "password updated successfully"));
+});
+
+// ! AUTHENTICATION
+const authentication = asyncHandler(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponce(200, {}, "User authenticated successfully"));
+});
+
 export {
-  registerUser,
+  addUser,
   loginUeser,
   logoutUser,
   getUserDetails,
   updateUserDetails,
   refreshAccessToken,
+  forgotPassword,
+  resetPassword,
+  authentication,
 };
