@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import {
   Button,
   Card,
@@ -56,11 +57,12 @@ const AddEmployees = () => {
         }
       );
       if (response.data.statusCode === 200) {
-        alert("User added successfully ✔");
+        toast.success("Successfully Created User");
         window.location.reload();
       }
     } catch (error) {
-      throw new Error(error.message);
+      toast.error("All Fields Required");
+      // throw new Error(error.message);
     }
   };
   const handelAdd = (departmentName) => {
@@ -76,6 +78,9 @@ const AddEmployees = () => {
   };
   return (
     <>
+      <div>
+        <Toaster position="top-center" reverseOrder={false} />
+      </div>
       <EmployeeHeader />
       <Container className="mt--7" fluid>
         <Card className="bg-secondary shadow">

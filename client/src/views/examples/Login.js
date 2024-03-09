@@ -18,6 +18,7 @@
 
 // reactstrap components
 import { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import {
   Button,
@@ -50,6 +51,7 @@ const Login = () => {
           }
         );
         if (response.data.statusCode === 200) {
+          toast.success("Login successful!");
           navigate("/admin/index");
         }
       } catch (error) {
@@ -73,7 +75,7 @@ const Login = () => {
         }
       )
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         const { user } = result.data.data;
         if (result.status === 200) {
           localStorage.setItem("user", JSON.stringify(user));
@@ -81,8 +83,11 @@ const Login = () => {
         }
       })
       .catch((err) => {
-        if (err.code === "ERR_BAD_REQUEST")
-          alert("User not found: " + err.message);
+        console.log(err);
+        if (err.message === "Request failed with status code 404") {
+          toast.error("Invalid credentials");
+        } else if (err.code === "ERR_BAD_REQUEST")
+          toast.error("All fields Required");
       });
 
     // alert("oky karo");
@@ -90,6 +95,9 @@ const Login = () => {
 
   return (
     <>
+      <div>
+        <Toaster position="top-center" reverseOrder={false} />
+      </div>
       <Col lg="5" md="7">
         <Card className="bg-secondary shadow border-0">
           <CardHeader className="bg-transparent pb-5">
