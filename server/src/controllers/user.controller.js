@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { mailer } from "../utils/nodeMailer.js";
 import { Department } from "../models/department.model.js";
 import { UserDepartmentSchema } from "../models/userDepartment.model.js";
+import mongoose from "mongoose";
 
 //! For JWT gerneration purposes
 const generateAccessTokenAndRefreshToken = async (userId) => {
@@ -311,6 +312,31 @@ const authentication = asyncHandler(async (req, res) => {
     .json(new ApiResponce(200, {}, "User authenticated successfully"));
 });
 
+// ! Display All Users
+const displayAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find().select(" -password -refreshToken");
+
+  if (!users) {
+    throw new ApiError(500, "Something went wrong");
+  }
+
+  return res.status(200).json(new ApiResponce(200, users, "Get all users"));
+});
+
+//! Delete User
+const deleteUser = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+  // console.log(userId);
+  const user = await User.findByIdAndDelete(userId);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponce(200, {}, "User deleted successfully"));
+});
 export {
   addUser,
   loginUeser,
@@ -321,4 +347,6 @@ export {
   forgotPassword,
   resetPassword,
   authentication,
+  displayAllUsers,
+  deleteUser,
 };

@@ -25,6 +25,8 @@ import Icons from "views/examples/Icons.js";
 import AddEmployees from "views/examples/AddEmployees";
 import ForgotPassword from "views/examples/ForgotPassWord";
 import ResetPassword from "views/examples/ResetPassword";
+import AllUsers from "views/examples/AllUsers";
+import AddCandidate from "views/examples/AddCandidate";
 // import ForgotPassword from "views/examples/ForgotPassWord";
 
 var routes = [
@@ -36,41 +38,12 @@ var routes = [
     layout: "/admin",
   },
   {
-    path: "/AddEmployees",
-    name: "ADD Employee",
-    icon: "ni ni-fat-add",
+    path: "/add-user",
+    name: "Add User",
+    icon: "ni ni-fat-add text-red",
     component: <AddEmployees />,
     layout: "/admin",
   },
-  {
-    path: "/icons",
-    name: "Icons",
-    icon: "ni ni-planet text-blue",
-    component: <Icons />,
-    layout: "/admin",
-    hideInSidebar: true,
-  },
-  // {
-  //   path: "/maps",
-  //   name: "Maps",
-  //   icon: "ni ni-pin-3 text-orange",
-  //   component: <Maps />,
-  //   layout: "/admin",
-  // },
-  // {
-  //   path: "/user-profile",
-  //   name: "User Profile",
-  //   icon: "ni ni-single-02 text-yellow",
-  //   component: <Profile />,
-  //   layout: "/admin",
-  // },
-  // {
-  //   path: "/tables",
-  //   name: "Tables",
-  //   icon: "ni ni-bullet-list-67 text-red",
-  //   component: <Tables />,
-  //   layout: "/admin",
-  // },
   {
     path: "/login",
     name: "Login",
@@ -95,6 +68,51 @@ var routes = [
     layout: "/auth",
     hideInSidebar: true,
   },
+  {
+    path: "/icons",
+    name: "Icons",
+    icon: "ni ni-planet text-red",
+    component: <Icons />,
+    layout: "/admin",
+    hideInSidebar: true,
+  },
+  {
+    path: "/all-users",
+    name: "Users",
+    icon: "ni ni-single-02 text-yellow",
+    component: <AllUsers />,
+    layout: "/admin",
+    hideInSidebar: false,
+  },
+  {
+    path: "/add-candidate",
+    name: "Add Candidate",
+    icon: "ni ni-circle-08 text-green",
+    component: <AddCandidate />,
+    layout: "/admin",
+    hideInSidebar: false,
+  },
+  // {
+  //   path: "/maps",
+  //   name: "Maps",
+  //   icon: "ni ni-pin-3 text-orange",
+  //   component: <Maps />,
+  //   layout: "/admin",
+  // },
+  // {
+  //   path: "/user-profile",
+  //   name: "User Profile",
+  //   icon: "ni ni-single-02 text-yellow",
+  //   component: <Profile />,
+  //   layout: "/admin",
+  // },
+  // {
+  //   path: "/tables",
+  //   name: "Tables",
+  //   icon: "ni ni-bullet-list-67 text-red",
+  //   component: <Tables />,
+  //   layout: "/admin",
+  // },
   // {
   //   path: "/register",
   //   name: "Register",

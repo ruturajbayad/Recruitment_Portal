@@ -2,6 +2,8 @@ import { Router } from "express";
 import {
   addUser,
   authentication,
+  deleteUser,
+  displayAllUsers,
   forgotPassword,
   getUserDetails,
   loginUeser,
@@ -22,5 +24,7 @@ router.route("/refreshAccessToken").post(refreshAccessToken);
 router.route("/forgot-Password").post(forgotPassword);
 router.route("/reset-password/:id/:token").post(resetPassword);
 router.route("/auth").get(verifyJwt, authentication);
+router.route("/all-users").get(verifyJwt, displayAllUsers);
+router.route("/delete-user/:id").post(deleteUser);
 
 export default router;

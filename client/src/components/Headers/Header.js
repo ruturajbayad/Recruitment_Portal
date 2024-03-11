@@ -17,11 +17,33 @@
 */
 
 // reactstrap components
+import { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
 import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 
 const Header = () => {
+  const [users, setUsers] = useState([]);
+  useEffect(() => {
+    const fatchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:4000/api/v1/users/all-users",
+          {
+            withCredentials: true,
+          }
+        );
+        const result = response.data.data;
+        setUsers(result);
+      } catch (error) {
+        toast.error("Something went wrong");
+      }
+    };
+    fatchData();
+  }, []);
   return (
     <>
+      <Toaster />
       <div className="header bg-gradient-info pb-8 pt-5 pt-md-8">
         <Container fluid>
           <div className="header-body">
@@ -66,7 +88,9 @@ const Header = () => {
                         >
                           Total Employees
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">2,356</span>
+                        <span className="h2 font-weight-bold mb-0">
+                          {users.length}
+                        </span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-warning text-white rounded-circle shadow">

@@ -2,7 +2,11 @@ import mongoose from "mongoose";
 
 const candidateSchema = new mongoose.Schema(
   {
-    fullname: {
+    Firstname: {
+      type: String,
+      required: true,
+    },
+    Lastname: {
       type: String,
       required: true,
     },
@@ -11,46 +15,70 @@ const candidateSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    experiance: {
-      type: String,
-    },
-    qualification: {
-      type: String,
-      required: true,
-    },
-    skills: {
-      type: Array,
-      required: true,
-    },
-    department: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Department",
-    },
-    age: {
+    mobileNo: {
       type: Number,
       required: true,
+      minlength: 10,
+    },
+    DoB: {
+      type: Date,
+      required: true,
+    },
+    education: {
+      type: String,
+      enum: [
+        "BSC",
+        "MSC",
+        "BE IT",
+        "BE Computer",
+        "ME IT",
+        "ME Computer",
+        "Other",
+      ],
+      required: true,
+    },
+    experiance: {
+      type: String,
     },
     gender: {
       type: String,
       enum: ["Male", "Female", "Other"],
       required: true,
     },
-    mobileNo: {
-      type: Number,
-      required: true,
-      minlength: 10,
-    },
     resume: {
       type: String, // url of file
       // required: true,
     },
-    feedback: {
+    WorkLocation: {
       type: String,
+      enum: ["Work from Home", "Work From Office", "Hybrid"],
+      required: true,
     },
-    isSelected: {
+    isCurrentlyWorking: {
       type: Boolean,
       required: true,
       default: false,
+    },
+    CurrentCompany: {
+      type: String,
+    },
+    CTC: {
+      type: Number,
+    },
+    ETC: {
+      type: Number,
+    },
+    isNegotiable: {
+      type: Boolean,
+    },
+    ReasonforChange: {
+      type: String,
+    },
+    NoticePeriod: {
+      type: Number,
+    },
+    isAnyGap: {
+      type: Boolean,
     },
   },
   {

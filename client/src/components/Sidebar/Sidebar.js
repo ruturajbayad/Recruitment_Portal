@@ -81,6 +81,8 @@ const Sidebar = (props) => {
       .catch((err) => console.log(err));
   };
 
+  // ? -------------------------------------------
+
   const [collapseOpen, setCollapseOpen] = useState();
   // verifies if routeName is the one active (in browser input)
   const activeRoute = (routeName) => {
@@ -153,6 +155,7 @@ const Sidebar = (props) => {
               alt={logo.imgAlt}
               className="navbar-brand-img"
               src={logo.imgSrc}
+              style={{ width: "150px", height: "auto" }}
             />
           </NavbarBrand>
         ) : null}

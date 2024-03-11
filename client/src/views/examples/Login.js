@@ -51,7 +51,6 @@ const Login = () => {
           }
         );
         if (response.data.statusCode === 200) {
-          toast.success("Login successful!");
           navigate("/admin/index");
         }
       } catch (error) {
