@@ -18,14 +18,26 @@ import axios from "axios";
 // import { useNavigate } from "react-router-dom";
 
 const AddCandidate = () => {
-  const [firstName, setFirstname] = useState("");
-  const [lastName, setLastname] = useState("");
-  const [password, setPassword] = useState("");
+  const [Firstname, setFirstname] = useState("");
+  const [Lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
-  const [departments, setDepartment] = useState([]);
-  const [UserRole, setRole] = useState("");
+  const [mobileNo, setMobileNO] = useState(0);
+  const [Dob, setDob] = useState("");
+  const [education, setEducation] = useState("");
+  const [experiance, setExperiance] = useState("");
+  const [gender, setGender] = useState("");
+  const [workLocation, setWorkLocation] = useState("");
+  const [currentCompany, setCurrentCompany] = useState(false);
+  const [currentlyWorking, setCurrentlyWorking] = useState();
+  const [CTC, setCTC] = useState("");
+  const [ETC, setETC] = useState("");
+  const [isNegotiable, setIsNegotiable] = useState(false);
+  const [reasonforChange, setReasonforChange] = useState("");
+  const [noticePeriod, setNoticePeriod] = useState(0);
+  const [isAnyGap, setIsAnyGap] = useState(false);
   const [options, setOptions] = useState([]);
-  const [currentlyWorking, setCurrentlyWorking] = useState("");
+  const [resume, setResume] = useState();
+  const [departments, setDepartment] = useState([]);
   // const navigates = useNavigate();
   useEffect(() => {
     async function fatchData() {
@@ -40,25 +52,47 @@ const AddCandidate = () => {
     }
     fatchData();
   }, []);
-  const AddUser = async (e) => {
+
+  const AddCandidate = async (e) => {
     e.preventDefault();
+    // console.log(departments);
     try {
+      const formData = new FormData();
+      formData.append("Firstname", Firstname);
+      formData.append("Lastname", Lastname);
+      formData.append("email", email);
+      formData.append("mobileNo", mobileNo);
+      formData.append("DoB", Dob);
+      formData.append("education", education);
+      formData.append("gender", gender);
+      formData.append("WorkLocation", workLocation);
+      formData.append("CurrentCompany", currentCompany);
+      formData.append("isCurrentlyWorking", currentlyWorking);
+      formData.append("CTC", CTC);
+      formData.append("ETC", ETC);
+      formData.append("isNegotiable", isNegotiable);
+      formData.append("ReasonforChange", reasonforChange);
+      formData.append("NoticePeriod", noticePeriod);
+      formData.append("isAnyGap", isAnyGap);
+      formData.append("experiance", experiance);
+      formData.append("resume", resume);
+      formData.append("departments", departments);
+      // console.log(Firstname, Lastname, email, isAnyGap);
+      // for (const pair of formData.entries()) {
+      //   console.log(pair[0] + ", " + pair[1]);
+      // }
       const response = await axios.post(
-        "http://localhost:4000/api/v1/users/addUser",
-        {
-          firstName,
-          lastName,
-          password,
-          email,
-          UserRole,
-          departments,
-        },
+        "http://localhost:4000/api/v1/candidates/uploadCandidateDetails",
+        formData,
         {
           withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
       if (response.data.statusCode === 200) {
-        toast.success("Successfully Created User");
+        toast.success("Successfully Added Candidate");
         window.location.reload();
       }
     } catch (error) {
@@ -94,7 +128,7 @@ const AddCandidate = () => {
                 <Button
                   color="primary"
                   href="#pablo"
-                  onClick={(e) => AddUser(e)}
+                  onClick={(e) => AddCandidate(e)}
                   size="medium"
                 >
                   Add
@@ -177,7 +211,7 @@ const AddCandidate = () => {
                         id="input-number"
                         placeholder="Mobile Number"
                         type="text"
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => setMobileNO(e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -194,7 +228,7 @@ const AddCandidate = () => {
                         id="input-number"
                         placeholder="DoB"
                         type="Date"
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => setDob(e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -213,7 +247,7 @@ const AddCandidate = () => {
                         onRemove={function noRefCheck() {}}
                         onSearch={function noRefCheck() {}}
                         onSelect={function noRefCheck(e) {
-                          setRole(e.at(0));
+                          setEducation(e.at(0));
                         }}
                         singleSelect="false"
                         options={[
@@ -245,7 +279,7 @@ const AddCandidate = () => {
                         id="input-first-name"
                         placeholder="Experiance Please Enter in form of Year"
                         type="text"
-                        onChange={(e) => setFirstname(e.target.value)}
+                        onChange={(e) => setExperiance(e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -264,7 +298,7 @@ const AddCandidate = () => {
                         onRemove={function noRefCheck() {}}
                         onSearch={function noRefCheck() {}}
                         onSelect={function noRefCheck(e) {
-                          setRole(e.at(0));
+                          setGender(e.at(0));
                         }}
                         singleSelect="false"
                         options={["Male", "Female", "Other"]}
@@ -289,7 +323,7 @@ const AddCandidate = () => {
                         onRemove={function noRefCheck() {}}
                         onSearch={function noRefCheck() {}}
                         onSelect={function noRefCheck(e) {
-                          setRole(e.at(0));
+                          setWorkLocation(e.at(0));
                         }}
                         singleSelect="false"
                         options={[
@@ -316,11 +350,11 @@ const AddCandidate = () => {
                         onRemove={function noRefCheck() {}}
                         onSearch={function noRefCheck() {}}
                         onSelect={function noRefCheck(e) {
-                          setCurrentlyWorking(e.at(0));
+                          setCurrentlyWorking(e.at(0) === "Yes" ? true : false);
                         }}
                         singleSelect="false"
                         options={["Yes", "No"]}
-                        placeholder="Select Role"
+                        placeholder="Select Currently Working"
                       />
                     </FormGroup>
                   </Col>
@@ -340,7 +374,8 @@ const AddCandidate = () => {
                         id="input-first-name"
                         placeholder="Upload your Resume"
                         type="file"
-                        onChange={(e) => setFirstname(e.target.value)}
+                        accept="image/*,.pdf"
+                        onChange={(e) => setResume(e.target.files[0])}
                       />
                     </FormGroup>
                   </Col>
@@ -371,7 +406,7 @@ const AddCandidate = () => {
               </div>
               <hr className="my-4" />
               {/* Address */}
-              {currentlyWorking === "Yes" && (
+              {currentlyWorking === true && (
                 <div className="pl-4">
                   <Row>
                     <Col lg="6">
@@ -388,7 +423,7 @@ const AddCandidate = () => {
                           id="input-first-name"
                           placeholder="Company Name"
                           type="text"
-                          onChange={(e) => setFirstname(e.target.value)}
+                          onChange={(e) => setCurrentCompany(e.target.value)}
                         />
                       </FormGroup>
                     </Col>
@@ -406,7 +441,7 @@ const AddCandidate = () => {
                           id="input-first-name"
                           placeholder="Enter CTC in Number"
                           type="text"
-                          onChange={(e) => setFirstname(e.target.value)}
+                          onChange={(e) => setCTC(e.target.value)}
                         />
                       </FormGroup>
                     </Col>
@@ -426,7 +461,7 @@ const AddCandidate = () => {
                           id="input-first-name"
                           placeholder="Enter ETC"
                           type="text"
-                          onChange={(e) => setFirstname(e.target.value)}
+                          onChange={(e) => setETC(e.target.value)}
                         />
                       </FormGroup>
                     </Col>
@@ -445,7 +480,7 @@ const AddCandidate = () => {
                           onRemove={function noRefCheck() {}}
                           onSearch={function noRefCheck() {}}
                           onSelect={function noRefCheck(e) {
-                            setCurrentlyWorking(e.at(0));
+                            setIsNegotiable(e.at(0) === "Yes" ? true : false);
                           }}
                           singleSelect="false"
                           options={["Yes", "No"]}
@@ -469,7 +504,7 @@ const AddCandidate = () => {
                           id="input-first-name"
                           placeholder="Why would you like to change"
                           type="text"
-                          onChange={(e) => setFirstname(e.target.value)}
+                          onChange={(e) => setReasonforChange(e.target.value)}
                         />
                       </FormGroup>
                     </Col>
@@ -488,7 +523,7 @@ const AddCandidate = () => {
                           onRemove={function noRefCheck() {}}
                           onSearch={function noRefCheck() {}}
                           onSelect={function noRefCheck(e) {
-                            setCurrentlyWorking(e.at(0));
+                            setNoticePeriod(e.at(0));
                           }}
                           singleSelect="false"
                           options={["Imediate", "Less than 15", "30+ days "]}
@@ -513,7 +548,7 @@ const AddCandidate = () => {
                           onRemove={function noRefCheck() {}}
                           onSearch={function noRefCheck() {}}
                           onSelect={function noRefCheck(e) {
-                            setCurrentlyWorking(e.at(0));
+                            setIsAnyGap(e.at(0) === "Yes" ? true : false);
                           }}
                           singleSelect="false"
                           options={["Yes", "No"]}

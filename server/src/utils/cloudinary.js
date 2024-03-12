@@ -2,7 +2,7 @@ import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
 
-import { v2 as cloudinary } from "cloudinary"
+import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
   cloud_name: `${process.env.CLOUDINARY_NAME}`,
@@ -23,7 +23,7 @@ const uploadInCloudinary = async (localFilePath) => {
     return responce;
   } catch (error) {
     fs.unlinkSync(localFilePath); //! when file is not uploaded or failed to upload then
-    // console.log(error);
+    console.log(error);
     return null;
   }
 };

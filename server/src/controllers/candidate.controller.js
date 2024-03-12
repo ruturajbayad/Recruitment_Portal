@@ -35,16 +35,14 @@ const uploadCandidatesDetails = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All required fields");
   }
 
-  const existingCandidate = await Candidate.findOne({
-    $or: [{ email }],
-  });
+  const existingCandidate = await Candidate.findOne({ email });
 
   if (existingCandidate) {
     throw new ApiError(400, "Candidate already exists");
   }
 
   const resumeLocalPath = req.file?.path;
-
+  console.log(resumeLocalPath);
   if (!resumeLocalPath) {
     throw new ApiError(400, "Resume is required");
   }
@@ -82,7 +80,13 @@ const uploadCandidatesDetails = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong");
   }
 
-  const candidateDepartment = departments.map(async (departmentobj) => {
+  const departmentIds = departments.split(",");
+
+  if (departmentIds.length < 0) {
+    throw new ApiError(400, "All required fields");
+  }
+
+  const candidateDepartment = departmentIds.map(async (departmentobj) => {
     const department = await Department.findById(departmentobj);
 
     if (!department) {

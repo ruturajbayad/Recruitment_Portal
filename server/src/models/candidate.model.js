@@ -21,7 +21,7 @@ const candidateSchema = new mongoose.Schema(
       minlength: 10,
     },
     DoB: {
-      type: Date,
+      type: String,
       required: true,
     },
     education: {
@@ -75,7 +75,7 @@ const candidateSchema = new mongoose.Schema(
       type: String,
     },
     NoticePeriod: {
-      type: Number,
+      type: String,
     },
     isAnyGap: {
       type: Boolean,
