@@ -15,6 +15,7 @@ import {
   Col,
 } from "reactstrap";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -28,7 +29,7 @@ const ForgotPassword = () => {
       })
       .then((response) => {
         if (response.data.statusCode === 200) {
-          alert("link sent successfully ✔");
+          toast.success("Email sent successfully");
           navigate("/auth/login");
         } else if (response.data.statusCode === 404) {
           alert("Email not found");
@@ -42,6 +43,7 @@ const ForgotPassword = () => {
 
   return (
     <>
+      <Toaster />
       <Col lg="5" md="7">
         <Card className="bg-secondary shadow border-0">
           <CardHeader className="bg-transparent pb-2">

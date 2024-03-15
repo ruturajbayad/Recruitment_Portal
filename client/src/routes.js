@@ -16,7 +16,7 @@
 
 */
 import Index from "views/Index.js";
-// import Profile from "views/examples/Profile.js";
+import Profile from "views/examples/Profile.js";
 // import Maps from "views/examples/Maps.js";
 // import Register from "views/examples/Register.js";
 import Login from "views/examples/Login.js";
@@ -27,6 +27,8 @@ import ForgotPassword from "views/examples/ForgotPassWord";
 import ResetPassword from "views/examples/ResetPassword";
 import AllUsers from "views/examples/AllUsers";
 import AddCandidate from "views/examples/AddCandidate";
+import AllCandidates from "views/examples/AllCandidates";
+import AddSchedule from "views/examples/AddSchedule";
 // import ForgotPassword from "views/examples/ForgotPassWord";
 
 var routes = [
@@ -85,10 +87,33 @@ var routes = [
     hideInSidebar: false,
   },
   {
+    path: "/index",
+    name: "Dashboard",
+    icon: "ni ni-tv-2 text-primary",
+    component: <Index />,
+    layout: "/admin",
+  },
+  {
     path: "/add-candidate",
     name: "Add Candidate",
-    icon: "ni ni-circle-08 text-green",
+    icon: "ni ni-fat-add text-green",
     component: <AddCandidate />,
+    layout: "/admin",
+    hideInSidebar: false,
+  },
+  {
+    path: "/show-candidate",
+    name: "Show Candidate",
+    icon: "ni ni-circle-08 text-green",
+    component: <AllCandidates />,
+    layout: "/admin",
+    hideInSidebar: false,
+  },
+  {
+    path: "/schdule",
+    name: "Schedule",
+    icon: "ni ni-calendar-grid-58 text-blue",
+    component: <AddSchedule />,
     layout: "/admin",
     hideInSidebar: false,
   },
@@ -99,13 +124,13 @@ var routes = [
   //   component: <Maps />,
   //   layout: "/admin",
   // },
-  // {
-  //   path: "/user-profile",
-  //   name: "User Profile",
-  //   icon: "ni ni-single-02 text-yellow",
-  //   component: <Profile />,
-  //   layout: "/admin",
-  // },
+  {
+    path: "/user-profile",
+    name: "User Profile",
+    icon: "ni ni-single-02 text-yellow",
+    component: <Profile />,
+    layout: "/admin",
+  },
   // {
   //   path: "/tables",
   //   name: "Tables",

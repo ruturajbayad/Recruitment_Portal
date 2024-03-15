@@ -48,7 +48,7 @@ const Profile = () => {
                       <img
                         alt="..."
                         className="rounded-circle"
-                        src={require("../../assets/img/theme/team-4-800x800.jpg")}
+                        src={require("../../assets/img/theme/sketch.jpg")}
                       />
                     </a>
                   </div>
@@ -97,7 +97,7 @@ const Profile = () => {
                 </Row>
                 <div className="text-center">
                   <h3>
-                    Jessica Jones
+                    Ruturaj Bayas
                     <span className="font-weight-light">, 27</span>
                   </h3>
                   <div className="h5 font-weight-300">
@@ -161,7 +161,7 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue="lucky.jesse"
+                            defaultValue="Ruturaj bayad"
                             id="input-username"
                             placeholder="Username"
                             type="text"
@@ -179,7 +179,7 @@ const Profile = () => {
                           <Input
                             className="form-control-alternative"
                             id="input-email"
-                            placeholder="jesse@example.com"
+                            placeholder="Ruturaj@example.com"
                             type="email"
                           />
                         </FormGroup>
@@ -196,7 +196,7 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue="Lucky"
+                            defaultValue="Ruturaj"
                             id="input-first-name"
                             placeholder="First name"
                             type="text"
@@ -213,7 +213,7 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue="Jesse"
+                            defaultValue="Bayad"
                             id="input-last-name"
                             placeholder="Last name"
                             type="text"

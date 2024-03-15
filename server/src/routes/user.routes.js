@@ -11,6 +11,7 @@ import {
   refreshAccessToken,
   resetPassword,
   updateUserDetails,
+  userRole,
 } from "../controllers/user.controller.js";
 import { verifyJwt } from "../middlewares/auth.middlewares.js";
 const router = Router();
@@ -26,5 +27,6 @@ router.route("/reset-password/:id/:token").post(resetPassword);
 router.route("/auth").get(verifyJwt, authentication);
 router.route("/all-users").get(verifyJwt, displayAllUsers);
 router.route("/delete-user/:id").post(deleteUser);
+router.route("/get-userrole").post(verifyJwt, userRole);
 
 export default router;

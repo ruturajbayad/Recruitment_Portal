@@ -118,4 +118,12 @@ const uploadCandidatesDetails = asyncHandler(async (req, res) => {
     );
 });
 
-export { uploadCandidatesDetails };
+const ShowCandidateDetails = asyncHandler(async (req, res) => {
+  const candidate = await Candidate.find();
+  // console.log(candidate);
+  res
+    .status(200)
+    .json(new ApiResponce(200, candidate, "Data Get Successfully"));
+});
+
+export { uploadCandidatesDetails, ShowCandidateDetails };

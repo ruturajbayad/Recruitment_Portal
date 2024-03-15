@@ -76,9 +76,16 @@ const Login = () => {
       .then((result) => {
         // console.log(result);
         const { user } = result.data.data;
+        // console.log(user.UserRole);
         if (result.status === 200) {
           localStorage.setItem("user", JSON.stringify(user));
-          navigate("/admin/index");
+          if (user.UserRole === "admin") {
+            navigate("/admin/index");
+          } else if (user.UserRole === "Technical Person") {
+            navigate("/employee/index");
+          } else {
+            navigate("/hr/index");
+          }
         }
       })
       .catch((err) => {

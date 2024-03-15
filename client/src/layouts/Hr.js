@@ -31,9 +31,11 @@ import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 
-import routes from "routes.js";
+// import routes from "routes.js";
+import routes from "hr.routes.js";
 
-const Admin = (props) => {
+const Hr = (props) => {
+  // ! Custom Code
   const navigate = useNavigate();
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
@@ -41,12 +43,11 @@ const Admin = (props) => {
       throw new Error("User data or user ID not found");
     }
     console.log(userData);
-    if (userData.UserRole === "Technical Person") {
+    if (userData.UserRole === "admin") {
+      navigate("/admin/index");
+    } else if (userData.UserRole === "Technical Person") {
       navigate("/employee/index");
-    } else if (userData.UserRole === "HR") {
-      navigate("/hr/index");
     }
-
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -65,6 +66,8 @@ const Admin = (props) => {
 
     fetchData();
   }, [navigate]);
+
+  //! Default Code
   const mainContent = React.useRef(null);
   const location = useLocation();
 
@@ -76,7 +79,7 @@ const Admin = (props) => {
 
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
-      if (prop.layout === "/admin") {
+      if (prop.layout === "/hr") {
         return (
           <Route path={prop.path} element={prop.component} key={key} exact />
         );
@@ -104,7 +107,7 @@ const Admin = (props) => {
         {...props}
         routes={routes}
         logo={{
-          innerLink: "/admin/index",
+          innerLink: "/hr/index",
           imgSrc: require("../assets/img/brand/ourLogo.png"),
           imgAlt: "...",
         }}
@@ -116,7 +119,7 @@ const Admin = (props) => {
         />
         <Routes>
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/admin/index" replace />} />
+          <Route path="*" element={<Navigate to="/hr/index" replace />} />
         </Routes>
         <Container fluid>
           <AdminFooter />
@@ -126,4 +129,4 @@ const Admin = (props) => {
   );
 };
 
-export default Admin;
+export default Hr;

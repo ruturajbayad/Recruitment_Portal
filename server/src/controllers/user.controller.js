@@ -337,6 +337,21 @@ const deleteUser = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponce(200, {}, "User deleted successfully"));
 });
+
+// ! return Role
+const userRole = asyncHandler(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  const userrole = await User.findById(user._id).select(
+    " -password -refreshToken -firstName -email -lastName"
+  );
+  console.log(userrole);
+  return res
+    .status(200)
+    .json(new ApiResponce(200, userrole, "user role fatced successfully"));
+});
 export {
   addUser,
   loginUeser,
@@ -349,4 +364,5 @@ export {
   authentication,
   displayAllUsers,
   deleteUser,
+  userRole,
 };

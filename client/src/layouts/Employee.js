@@ -31,12 +31,23 @@ import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 
-import routes from "routes.js";
+// import routes from "routes.js";
+import routes from "employee.routes.js";
 
 const Employee = (props) => {
   // ! Custom Code
   const navigate = useNavigate();
   useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (!userData || !userData._id) {
+      throw new Error("User data or user ID not found");
+    }
+    console.log(userData);
+    if (userData.UserRole === "admin") {
+      navigate("/admin/index");
+    } else if (userData.UserRole === "HR") {
+      navigate("/hr/index");
+    }
     const fetchData = async () => {
       try {
         const response = await axios.get(
