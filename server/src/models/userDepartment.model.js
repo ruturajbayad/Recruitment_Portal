@@ -12,7 +12,7 @@ const userDepartmentSchema = new mongoose.Schema({
   },
 });
 
-export const UserDepartmentSchema = new mongoose.model(
+export const UserDepartment = new mongoose.model(
   "UserDepartment",
   userDepartmentSchema
 );

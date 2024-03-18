@@ -86,13 +86,13 @@ var routes = [
     layout: "/admin",
     hideInSidebar: false,
   },
-  {
-    path: "/index",
-    name: "Dashboard",
-    icon: "ni ni-tv-2 text-primary",
-    component: <Index />,
-    layout: "/admin",
-  },
+  // {
+  //   path: "/index",
+  //   name: "Dashboard",
+  //   icon: "ni ni-tv-2 text-primary",
+  //   component: <Index />,
+  //   layout: "/admin",
+  // },
   {
     path: "/add-candidate",
     name: "Add Candidate",
@@ -103,7 +103,7 @@ var routes = [
   },
   {
     path: "/show-candidate",
-    name: "Show Candidate",
+    name: "Candidates",
     icon: "ni ni-circle-08 text-green",
     component: <AllCandidates />,
     layout: "/admin",

@@ -5,7 +5,7 @@ import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { mailer } from "../utils/nodeMailer.js";
 import { Department } from "../models/department.model.js";
-import { UserDepartmentSchema } from "../models/userDepartment.model.js";
+import { UserDepartment } from "../models/userDepartment.model.js";
 import mongoose from "mongoose";
 
 //! For JWT gerneration purposes
@@ -71,7 +71,7 @@ const addUser = asyncHandler(async (req, res) => {
 
     const departmentID = department._id;
     const userID = user._id;
-    const userDepartment = await UserDepartmentSchema.create({
+    const userDepartment = await UserDepartment.create({
       userID,
       departmentID,
     });
@@ -269,7 +269,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   }
 
   const token = jwt.sign({ id: user._id }, process.env.RESET_TOKEN_SECRET, {
-    expiresIn: "10000",
+    expiresIn: "1d",
   });
 
   const response = mailer(user.email, user._id, token);
@@ -316,11 +316,25 @@ const authentication = asyncHandler(async (req, res) => {
 const displayAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select(" -password -refreshToken");
 
+  const populatedUsers = await Promise.all(
+    users.map(async (user) => {
+      const userDepartments = await UserDepartment.find({
+        userID: user._id,
+      }).populate("departmentID");
+      const departments = userDepartments.map(
+        (userDept) => userDept.departmentID
+      );
+      return { ...user.toObject(), departments };
+    })
+  );
+
   if (!users) {
     throw new ApiError(500, "Something went wrong");
   }
 
-  return res.status(200).json(new ApiResponce(200, users, "Get all users"));
+  return res
+    .status(200)
+    .json(new ApiResponce(200, populatedUsers, "Get all users"));
 });
 
 //! Delete User
@@ -328,7 +342,7 @@ const deleteUser = asyncHandler(async (req, res) => {
   const userId = req.params.id;
   // console.log(userId);
   const user = await User.findByIdAndDelete(userId);
-
+  const department = await Department.find;
   if (!user) {
     throw new ApiError(404, "User not found");
   }

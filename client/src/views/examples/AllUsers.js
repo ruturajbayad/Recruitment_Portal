@@ -120,76 +120,30 @@ const AllUsers = () => {
                       </td>
                       <td className="pr-1 pl-3">
                         <div className="avatar-group">
-                          <a
-                            className="avatar avatar-sm"
-                            href="#pablo"
-                            id="tooltip731399078"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            <img
-                              alt="..."
-                              src={require("../../assets/img/theme/angular.jpg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip731399078"
-                          >
-                            Angular
-                          </UncontrolledTooltip>
-                          <a
-                            className="avatar avatar-sm"
-                            href="#pablo"
-                            id="tooltip491083084"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            <img
-                              alt="..."
-                              src={require("../../assets/img/theme/bootstrap.jpg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip491083084"
-                          >
-                            Bootstrap
-                          </UncontrolledTooltip>
-                          <a
-                            className="avatar avatar-sm"
-                            href="#pablo"
-                            id="tooltip528540780"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            <img
-                              alt="..."
-                              className="rounded-circle"
-                              src={require("../../assets/img/theme/react.jpg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip528540780"
-                          >
-                            React
-                          </UncontrolledTooltip>
-                          <a
-                            className="avatar avatar-sm"
-                            href="#pablo"
-                            id="tooltip237898869"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            <img
-                              alt="..."
-                              className="rounded-circle"
-                              src={require("../../assets/img/theme/vue.jpg")}
-                            />
-                          </a>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip237898869"
-                          >
-                            vue
-                          </UncontrolledTooltip>
+                          {user.departments.map((department) => {
+                            const tooltipId = `tooltip${department.id}`;
+                            return (
+                              <React.Fragment key={department.id}>
+                                <a
+                                  className="avatar avatar-sm"
+                                  href="#pablo"
+                                  id="tooltip731399078"
+                                  onClick={(e) => e.preventDefault()}
+                                >
+                                  <img
+                                    alt="..."
+                                    src={require(`../../assets/img/theme/${department.nameOfDepartment}.jpg`)}
+                                  />
+                                </a>
+                                <UncontrolledTooltip
+                                  delay={0}
+                                  target="tooltip731399078"
+                                >
+                                  {department.nameOfDepartment}
+                                </UncontrolledTooltip>
+                              </React.Fragment>
+                            );
+                          })}
                         </div>
                       </td>
                       <td className="text-center pr-4 pl-0 ">
