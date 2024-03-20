@@ -48,14 +48,14 @@ const Profile = () => {
                       <img
                         alt="..."
                         className="rounded-circle"
-                        src={require("../../assets/img/theme/sketch.jpg")}
+                        src={require("../../assets/img/theme/profile.jpg")}
                       />
                     </a>
                   </div>
                 </Col>
               </Row>
               <CardHeader className="text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
-                <div className="d-flex justify-content-between">
+                {/* <div className="d-flex justify-content-between">
                   <Button
                     className="mr-4"
                     color="info"
@@ -74,13 +74,13 @@ const Profile = () => {
                   >
                     Message
                   </Button>
-                </div>
+                </div> */}
               </CardHeader>
               <CardBody className="pt-0 pt-md-4">
                 <Row>
                   <div className="col">
                     <div className="card-profile-stats d-flex justify-content-center mt-md-5">
-                      <div>
+                      {/* <div>
                         <span className="heading">22</span>
                         <span className="description">Friends</span>
                       </div>
@@ -91,14 +91,14 @@ const Profile = () => {
                       <div>
                         <span className="heading">89</span>
                         <span className="description">Comments</span>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </Row>
                 <div className="text-center">
                   <h3>
-                    Ruturaj Bayas
-                    <span className="font-weight-light">, 27</span>
+                    Ruturaj Bayad
+                    {/* <span className="font-weight-light">, 27</span> */}
                   </h3>
                   <div className="h5 font-weight-300">
                     <i className="ni location_pin mr-2" />

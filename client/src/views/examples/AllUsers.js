@@ -1,7 +1,10 @@
 import axios from "axios";
 import EmployeeHeader from "components/Headers/EmployeeHeader";
+// import Loder from "components/Loder/Loder";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
+// import { RotatingLines } from "react-loader-spinner";
 // reactstrap components
 import {
   Badge,
@@ -25,6 +28,8 @@ import {
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
+  // const [isLodaing, setLoding] = useState(true);
   useEffect(() => {
     const fatchData = async () => {
       try {
@@ -34,6 +39,9 @@ const AllUsers = () => {
             withCredentials: true,
           }
         );
+        // setTimeout(() => {
+        //   setLoding(false);
+        // }, 2000);
         const result = response.data.data;
         setUsers(result);
       } catch (error) {
@@ -45,7 +53,7 @@ const AllUsers = () => {
 
   const deleteUser = async (e, userID) => {
     e.preventDefault();
-    console.log(userID);
+    // console.log(userID);
     try {
       await axios.post(
         `http://localhost:4000/api/v1/users/delete-user/${userID}`,
@@ -59,6 +67,15 @@ const AllUsers = () => {
       toast.error("Something went wrong");
     }
   };
+
+  const editUser = (e, userID) => {
+    e.preventDefault();
+    navigate(`/admin/user-profile/${userID}`);
+  };
+
+  // if (isLodaing) {
+  //   return <Loder />;
+  // }
 
   return (
     <>
@@ -102,7 +119,12 @@ const AllUsers = () => {
                         </a> */}
                         <Media>
                           <span className="mb-0 text-sm">
-                            {user.firstName} {user.lastName}
+                            <Link
+                              to={`/admin/user-profile/${user._id}`}
+                              className="text-white"
+                            >
+                              {user.firstName} {user.lastName}
+                            </Link>
                           </span>
                         </Media>
                         {/* </Media> */}
@@ -121,7 +143,6 @@ const AllUsers = () => {
                       <td className="pr-1 pl-3">
                         <div className="avatar-group">
                           {user.departments.map((department) => {
-                            const tooltipId = `tooltip${department.id}`;
                             return (
                               <React.Fragment key={department.id}>
                                 <a
@@ -160,8 +181,8 @@ const AllUsers = () => {
                           </DropdownToggle>
                           <DropdownMenu className="dropdown-menu-arrow" right>
                             <DropdownItem
-                              href="#pablo"
-                              onClick={(e) => e.preventDefault()}
+                              href="//user-profile/:id"
+                              onClick={(e) => editUser(e, user._id)}
                             >
                               Edit
                             </DropdownItem>

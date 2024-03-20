@@ -184,9 +184,9 @@ const getUserDetails = asyncHandler(async (req, res) => {
 
 // ! UPDATE USER DATA
 const updateUserDetails = asyncHandler(async (req, res) => {
-  const { fullname, email } = req.body;
+  const { firstName, email, lastName, UserRole, department } = req.body;
 
-  if (!(fullname && email)) {
+  if (!email) {
     throw new ApiError(400, "All required fields");
   }
 
@@ -194,8 +194,10 @@ const updateUserDetails = asyncHandler(async (req, res) => {
     req.user._id,
     {
       $set: {
-        fullname,
+        firstName,
         email,
+        lastName,
+        UserRole,
       },
     },
     {
@@ -210,7 +212,7 @@ const updateUserDetails = asyncHandler(async (req, res) => {
     );
 });
 
-// ! REFRESG ACCESSTOKEN
+// ! REFRESH ACCESSTOKEN
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
@@ -342,9 +344,15 @@ const deleteUser = asyncHandler(async (req, res) => {
   const userId = req.params.id;
   // console.log(userId);
   const user = await User.findByIdAndDelete(userId);
-  const department = await Department.find;
+
   if (!user) {
     throw new ApiError(404, "User not found");
+  }
+
+  const deletedDepartment = await UserDepartment.deleteMany({ userID: userId });
+
+  if (!deletedDepartment) {
+    throw new ApiError(500, "Something went wrong");
   }
 
   return res
@@ -361,10 +369,37 @@ const userRole = asyncHandler(async (req, res) => {
   const userrole = await User.findById(user._id).select(
     " -password -refreshToken -firstName -email -lastName"
   );
-  console.log(userrole);
+  // console.log(userrole);
   return res
     .status(200)
     .json(new ApiResponce(200, userrole, "user role fatced successfully"));
+});
+
+//! GET ONE USER DETAILS
+const GetSpacificUser = asyncHandler(async (req, res) => {
+  const userId = req.params.id;
+
+  if (!userId) {
+    throw new ApiError(401, "Need Id");
+  }
+
+  const user = await User.findById({ _id: userId }).select(
+    "-password -refreshToken"
+  );
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  const userDepartment = await UserDepartment.find({ userID: userId }).populate(
+    "departmentID"
+  );
+  const departments = userDepartment.map((userDept) => userDept.departmentID);
+  const userWithDepartment = { ...user.toObject(), departments };
+  return res
+    .status(200)
+    .json(
+      new ApiResponce(200, userWithDepartment, "User Fetched successfully")
+    );
 });
 export {
   addUser,
@@ -379,4 +414,5 @@ export {
   displayAllUsers,
   deleteUser,
   userRole,
+  GetSpacificUser,
 };

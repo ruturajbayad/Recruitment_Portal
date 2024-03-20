@@ -2,6 +2,7 @@ import axios from "axios";
 import EmployeeHeader from "components/Headers/EmployeeHeader";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { Link } from "react-router-dom";
 // reactstrap components
 import {
   Badge,
@@ -24,7 +25,7 @@ import {
 } from "reactstrap";
 
 const AllCandidates = () => {
-  const [users, setUsers] = useState([]);
+  const [candidates, setCandidates] = useState([]);
   useEffect(() => {
     const fatchData = async () => {
       try {
@@ -35,7 +36,7 @@ const AllCandidates = () => {
           }
         );
         const result = response.data.data;
-        setUsers(result);
+        setCandidates(result);
       } catch (error) {
         toast.error("Something went wrong");
       }
@@ -43,17 +44,17 @@ const AllCandidates = () => {
     fatchData();
   }, []);
 
-  const deleteUser = async (e, userID) => {
+  const deleteCandidate = async (e, candidateID) => {
     e.preventDefault();
-    console.log(userID);
+    // console.log(userID);
     try {
-      await axios.post(
-        `http://localhost:4000/api/v1/users/delete-user/${userID}`,
+      await axios.delete(
+        `http://localhost:4000/api/v1/candidates/delete-candidate/${candidateID}`,
         {
           withCredentials: true,
         }
       );
-      toast.success("User deleted successfully");
+      toast.success("Candidate deleted successfully");
       window.location.reload();
     } catch (error) {
       toast.error("Something went wrong");
@@ -86,8 +87,8 @@ const AllCandidates = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
-                    <tr key={user._id}>
+                  {candidates.map((candidate) => (
+                    <tr key={candidate._id}>
                       <th scope="row">
                         {/* <Media className="align-items-center">
                         <a
@@ -102,20 +103,26 @@ const AllCandidates = () => {
                         </a> */}
                         <Media>
                           <span className="mb-0 text-sm">
-                            {user.Firstname} {user.Lastname}
+                            <Link
+                              to={`/admin/cadidate-profile/${candidate._id}`}
+                            >
+                              {candidate.Firstname} {candidate.Lastname}{" "}
+                            </Link>
                           </span>
                         </Media>
                         {/* </Media> */}
                       </th>
-                      <td>{user.education}</td>
+                      <td>{candidate.education}</td>
                       <td>
                         <Badge color="" className="badge-dot mr-4">
                           <i
                             className={`${
-                              user.isInterviewer ? "bg-success" : "bg-warning"
+                              candidate.isNegotiable
+                                ? "bg-success"
+                                : "bg-warning"
                             }`}
                           />
-                          {user.isNegotiable ? "Yes" : "No"}
+                          {candidate.isNegotiable ? "Yes" : "No"}
                         </Badge>
                       </td>
                       <td className="pr-1 pl-3">
@@ -213,7 +220,7 @@ const AllCandidates = () => {
                             </DropdownItem>
                             <DropdownItem
                               href="#pablo"
-                              onClick={(e) => deleteUser(e, user._id)}
+                              onClick={(e) => deleteCandidate(e, candidate._id)}
                             >
                               Delete
                             </DropdownItem>

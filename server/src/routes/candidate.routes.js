@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  DeleteCandidateDetails,
   ShowCandidateDetails,
   uploadCandidatesDetails,
 } from "../controllers/candidate.controller.js";
@@ -12,5 +13,6 @@ router
   .post(upload.single("resume"), verifyJwt, uploadCandidatesDetails);
 
 router.route("/show-candidate").get(verifyJwt, ShowCandidateDetails);
+router.route("/delete-candidate/:id").delete(verifyJwt, DeleteCandidateDetails);
 
 export default router;

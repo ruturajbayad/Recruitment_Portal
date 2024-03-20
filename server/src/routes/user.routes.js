@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  GetSpacificUser,
   addUser,
   authentication,
   deleteUser,
@@ -28,5 +29,6 @@ router.route("/auth").get(verifyJwt, authentication);
 router.route("/all-users").get(verifyJwt, displayAllUsers);
 router.route("/delete-user/:id").post(deleteUser);
 router.route("/get-userrole").post(verifyJwt, userRole);
+router.route("/get-user/:id").get(verifyJwt, GetSpacificUser);
 
 export default router;

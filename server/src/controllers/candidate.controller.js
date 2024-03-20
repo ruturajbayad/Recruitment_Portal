@@ -3,9 +3,13 @@ import { ApiResponce } from "../utils/apiResponce.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Candidate } from "../models/candidate.model.js";
 import { upload } from "../middlewares/multer.middleware.js";
-import { uploadInCloudinary } from "../utils/cloudinary.js";
+import {
+  deleteFileFromCloudinary,
+  uploadInCloudinary,
+} from "../utils/cloudinary.js";
 import { Department } from "../models/department.model.js";
 import { CandidateDepartment } from "../models/candidateDepartment.model.js";
+import Path from "path";
 
 const uploadCandidatesDetails = asyncHandler(async (req, res) => {
   const {
@@ -42,7 +46,7 @@ const uploadCandidatesDetails = asyncHandler(async (req, res) => {
   }
 
   const resumeLocalPath = req.file?.path;
-  console.log(resumeLocalPath);
+  // console.log(resumeLocalPath);
   if (!resumeLocalPath) {
     throw new ApiError(400, "Resume is required");
   }
@@ -126,4 +130,37 @@ const ShowCandidateDetails = asyncHandler(async (req, res) => {
     .json(new ApiResponce(200, candidate, "Data Get Successfully"));
 });
 
-export { uploadCandidatesDetails, ShowCandidateDetails };
+const DeleteCandidateDetails = asyncHandler(async (req, res) => {
+  const candidateId = await req.params.id;
+
+  // const
+  const candidate = await Candidate.findByIdAndDelete({
+    _id: candidateId,
+  }).select(" resume -_id");
+  // console.log(candidate.resume);
+
+  if (!candidate) {
+    throw new ApiError(404, "candidate not found");
+  }
+
+  const deletedCandidateDepartement = await CandidateDepartment.deleteMany({
+    candidateID: candidateId,
+  });
+
+  if (!deletedCandidateDepartement) {
+    throw new ApiError(500, "Something went wrong when deleting candidate");
+  }
+  const filepath = candidate.resume;
+  // const file = filepath.substring(filepath.lastIndexOf("/"));
+  const file = Path.basename(filepath);
+  deleteFileFromCloudinary(Path.parse(file).name);
+  res
+    .status(200)
+    .json(new ApiResponce(200, {}, "Candidate deleted successfully"));
+});
+
+export {
+  uploadCandidatesDetails,
+  ShowCandidateDetails,
+  DeleteCandidateDetails,
+};
