@@ -2,7 +2,7 @@ import axios from "axios";
 import EmployeeHeader from "components/Headers/EmployeeHeader";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // reactstrap components
 import {
   Badge,
@@ -26,6 +26,7 @@ import {
 
 const AllCandidates = () => {
   const [candidates, setCandidates] = useState([]);
+  const navigate = useNavigate();
   useEffect(() => {
     const fatchData = async () => {
       try {
@@ -60,6 +61,10 @@ const AllCandidates = () => {
       toast.error("Something went wrong");
     }
   };
+  const editcandidate = (e, candidateID) => {
+    e.preventDefault();
+    navigate(`/admin/update-candidate/${candidateID}`);
+  };
 
   return (
     <>
@@ -71,7 +76,7 @@ const AllCandidates = () => {
           <div className="col">
             <Card className="bg-default shadow">
               <CardHeader className="bg-transparent border-0">
-                <h3 className="text-white mb-0">Users</h3>
+                <h3 className="text-white mb-0">Candidates</h3>
               </CardHeader>
               <Table
                 className="align-items-center table-dark table-flush"
@@ -79,7 +84,7 @@ const AllCandidates = () => {
               >
                 <thead className="thead-dark">
                   <tr>
-                    <th scope="col">User</th>
+                    <th scope="col">Candidate</th>
                     <th scope="col">Education</th>
                     <th scope="col">Status Of isInterview</th>
                     <th scope="col">Department</th>
@@ -214,7 +219,7 @@ const AllCandidates = () => {
                           <DropdownMenu className="dropdown-menu-arrow" right>
                             <DropdownItem
                               href="#pablo"
-                              onClick={(e) => e.preventDefault()}
+                              onClick={(e) => editcandidate(e, candidate._id)}
                             >
                               Edit
                             </DropdownItem>

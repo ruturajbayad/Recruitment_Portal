@@ -9,8 +9,9 @@ import {
 } from "../utils/cloudinary.js";
 import { Department } from "../models/department.model.js";
 import { CandidateDepartment } from "../models/candidateDepartment.model.js";
-import Path from "path";
+import Path, { resolve } from "path";
 
+// ! Add Candidates
 const uploadCandidatesDetails = asyncHandler(async (req, res) => {
   const {
     Firstname,
@@ -122,6 +123,7 @@ const uploadCandidatesDetails = asyncHandler(async (req, res) => {
     );
 });
 
+// ! Show All Candidates
 const ShowCandidateDetails = asyncHandler(async (req, res) => {
   const candidate = await Candidate.find();
   // console.log(candidate);
@@ -130,6 +132,7 @@ const ShowCandidateDetails = asyncHandler(async (req, res) => {
     .json(new ApiResponce(200, candidate, "Data Get Successfully"));
 });
 
+// ! Delete Candidate Details
 const DeleteCandidateDetails = asyncHandler(async (req, res) => {
   const candidateId = await req.params.id;
 
@@ -151,7 +154,6 @@ const DeleteCandidateDetails = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong when deleting candidate");
   }
   const filepath = candidate.resume;
-  // const file = filepath.substring(filepath.lastIndexOf("/"));
   const file = Path.basename(filepath);
   deleteFileFromCloudinary(Path.parse(file).name);
   res
@@ -159,8 +161,169 @@ const DeleteCandidateDetails = asyncHandler(async (req, res) => {
     .json(new ApiResponce(200, {}, "Candidate deleted successfully"));
 });
 
+// ! Single Candidate
+const SingleCandidate = asyncHandler(async (req, res) => {
+  const candidateID = req.params.id;
+
+  if (!candidateID) {
+    throw new ApiError(400, "Candidate ID is required");
+  }
+
+  const candidate = await Candidate.findById(candidateID);
+
+  if (!candidate) {
+    throw new ApiError(404, "Candidate not found");
+  }
+
+  const candidateDepartment = await CandidateDepartment.find({
+    candidateID: candidateID,
+  }).populate("departmentID");
+
+  const departments = candidateDepartment.map(
+    (candidateDepartment) => candidateDepartment.departmentID
+  );
+
+  const CandidateWithDepartment = { ...candidate.toObject(), departments };
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponce(
+        200,
+        CandidateWithDepartment,
+        "Candidate Fetched successfully"
+      )
+    );
+});
+
+// ! Update Cadnididate Details
+const updatecandidate = asyncHandler(async (req, res) => {
+  const {
+    Firstname,
+    Lastname,
+    email,
+    mobileNo,
+    DoB,
+    education,
+    experiance,
+    gender,
+    WorkLocation,
+    isCurrentlyWorking,
+    CurrentCompany,
+    CTC,
+    ETC,
+    isNegotiable,
+    ReasonforChange,
+    NoticePeriod,
+    isAnyGap,
+    departments,
+  } = req.body;
+  const candidateID = req.params.id;
+
+  if (!candidateID) throw new ApiError(400, "Id is required");
+
+  const candidate = await Candidate.findById({ _id: candidateID });
+
+  if (!candidate) {
+    throw new ApiError(404, "Candidate Not Found");
+  }
+
+  const updatedCandidate = await Candidate.findByIdAndUpdate(
+    candidate._id,
+    {
+      Firstname,
+      Lastname,
+      email,
+      mobileNo,
+      DoB,
+      education,
+      experiance,
+      gender,
+      WorkLocation,
+      isCurrentlyWorking,
+      CurrentCompany,
+      CTC,
+      ETC,
+      isNegotiable,
+      ReasonforChange,
+      NoticePeriod,
+      isAnyGap,
+    },
+    { new: true }
+  );
+
+  if (!updatedCandidate) throw new ApiError(500, "Somthing went Wrong");
+
+  const existingCandidateDepartments = await CandidateDepartment.find({
+    candidateID: candidate._id,
+  });
+
+  const existingCandidateDepartmentIDs = existingCandidateDepartments.map(
+    (dep) => dep.departmentID.toString()
+  );
+
+  const departmentsArray = Array.isArray(departments)
+    ? departments
+    : [departments];
+
+  const departmentsToUpdate = [];
+  const departmentsToInsert = [];
+  const departmentsToRemove = [];
+
+  departmentsArray.forEach((department) => {
+    if (existingCandidateDepartmentIDs.includes(department)) {
+      departmentsToUpdate.push(department);
+    } else {
+      departmentsToInsert.push(department);
+    }
+  });
+
+  existingCandidateDepartmentIDs.forEach((id) => {
+    if (!departmentsArray.includes(id)) {
+      departmentsToRemove.push(id);
+    }
+  });
+
+  const updateOperations = departmentsToUpdate.map(async (department) => {
+    await CandidateDepartment.updateMany(
+      {
+        candidateID: candidate.id,
+        departmentID: department,
+      },
+      { $set: { departmentID: department } },
+      { new: true, multi: true }
+    );
+  });
+
+  const insertOperations = departmentsToInsert.map(async (department) => {
+    await CandidateDepartment.create({
+      candidateID: candidate.id,
+      departmentID: department,
+    });
+  });
+
+  const removeOperations = departmentsToRemove.map(async (department) => {
+    await CandidateDepartment.deleteMany({
+      candidateID: candidate.id,
+      departmentID: department,
+    });
+  });
+
+  await Promise.all([
+    ...updateOperations,
+    ...insertOperations,
+    ...removeOperations,
+  ]);
+
+  return res
+    .status(200)
+    .json(new ApiResponce(200, {}, "Candidate Updated Successfully"));
+});
+
 export {
   uploadCandidatesDetails,
   ShowCandidateDetails,
   DeleteCandidateDetails,
+  SingleCandidate,
+  updatecandidate,
 };

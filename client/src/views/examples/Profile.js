@@ -33,6 +33,7 @@ import {
 import UserHeader from "components/Headers/UserHeader.js";
 
 const Profile = () => {
+  const userData = JSON.parse(localStorage.getItem("user"));
   return (
     <>
       <UserHeader />
@@ -97,7 +98,7 @@ const Profile = () => {
                 </Row>
                 <div className="text-center">
                   <h3>
-                    Ruturaj Bayad
+                    {userData.firstName} {userData.lastName}
                     {/* <span className="font-weight-light">, 27</span> */}
                   </h3>
                   <div className="h5 font-weight-300">

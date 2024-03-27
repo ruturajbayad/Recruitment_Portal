@@ -2,6 +2,7 @@ import HrIndex from "views/HrIndex";
 import AddCandidate from "views/examples/AddCandidate";
 import AddSchedule from "views/examples/AddSchedule";
 import AllCandidates from "views/examples/AllCandidates";
+import Profile from "views/examples/Profile";
 
 var HRroutes = [
   {
@@ -34,6 +35,14 @@ var HRroutes = [
     component: <AddSchedule />,
     layout: "/hr",
     hideInSidebar: false,
+  },
+  {
+    path: "/user-profile",
+    name: "User Profile",
+    icon: "ni ni-single-02 text-yellow",
+    component: <Profile />,
+    layout: "/hr",
+    hideInSidebar: true,
   },
 ];
 

@@ -35,6 +35,7 @@ import routes from "routes.js";
 
 const Admin = (props) => {
   const navigate = useNavigate();
+
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
     if (!userData || !userData._id) {

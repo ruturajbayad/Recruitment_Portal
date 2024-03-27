@@ -228,7 +228,7 @@ const AddEmployees = () => {
                           setRole(e.at(0));
                         }}
                         singleSelect="false"
-                        options={["Admin", "HR", "Technical Person"]}
+                        options={["admin", "HR", "Technical Person"]}
                         placeholder="Select Role"
                       />
                     </FormGroup>

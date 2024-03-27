@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import { mailer } from "../utils/nodeMailer.js";
 import { Department } from "../models/department.model.js";
 import { UserDepartment } from "../models/userDepartment.model.js";
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
 
 //! For JWT gerneration purposes
 const generateAccessTokenAndRefreshToken = async (userId) => {
@@ -35,8 +35,6 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
 const addUser = asyncHandler(async (req, res) => {
   const { firstName, lastName, email, password, UserRole, departments } =
     req.body;
-
-  // console.log(firstName, lastName, email, password, UserRole, departments);
 
   if (
     [email, password, firstName, lastName].some((feild) => feild?.trim() === "")
@@ -184,14 +182,14 @@ const getUserDetails = asyncHandler(async (req, res) => {
 
 // ! UPDATE USER DATA
 const updateUserDetails = asyncHandler(async (req, res) => {
-  const { firstName, email, lastName, UserRole, department } = req.body;
+  const { firstName, email, lastName, UserRole, departments } = req.body;
 
   if (!email) {
     throw new ApiError(400, "All required fields");
   }
 
   const user = await User.findByIdAndUpdate(
-    req.user._id,
+    req.params.id,
     {
       $set: {
         firstName,
@@ -203,7 +201,71 @@ const updateUserDetails = asyncHandler(async (req, res) => {
     {
       new: true,
     }
-  ).select(" -password ");
+  ).select(" -password -refreshToken ");
+
+  // Fetch existing user departments
+  const existingUserDepartments = await UserDepartment.find({
+    userID: user._id,
+  });
+
+  // Extract department IDs from existing user departments
+  const existingDepartmentIDs = existingUserDepartments.map((dep) =>
+    dep.departmentID.toString()
+  );
+
+  // Identify departments to be updated and inserted
+  const departmentsToUpdate = [];
+  const departmentsToInsert = [];
+  const departmentsToRemove = [];
+
+  departments.forEach((department) => {
+    if (existingDepartmentIDs.includes(department._id.toString())) {
+      // Department exists, add to update list
+      departmentsToUpdate.push(department);
+    } else {
+      // Department doesn't exist, add to insert list
+      departmentsToInsert.push(department);
+    }
+  });
+
+  existingUserDepartments.forEach((department) => {
+    if (
+      !departments.find(
+        (dep) => dep._id.toString() === department.departmentID.toString()
+      )
+    ) {
+      departmentsToRemove.push(department);
+    }
+  });
+
+  // Update existing user departments
+  const updateOperations = departmentsToUpdate.map(async (department) => {
+    await UserDepartment.updateMany(
+      { userID: user._id, departmentID: department._id },
+      { $set: { departmentID: department._id } },
+      { new: true, multi: true }
+    );
+  });
+
+  // Insert new user departments
+  const insertOperations = departmentsToInsert.map(async (department) => {
+    await UserDepartment.create({
+      userID: user._id,
+      departmentID: department._id,
+    });
+  });
+
+  // Remove departments no longer associated with the user
+  const removeOperations = departmentsToRemove.map(async (department) => {
+    await UserDepartment.deleteMany({ _id: department._id });
+  });
+
+  // Wait for all update and insert operations to complete
+  await Promise.all([
+    ...updateOperations,
+    ...insertOperations,
+    ...removeOperations,
+  ]);
 
   return res
     .status(200)
@@ -394,6 +456,8 @@ const GetSpacificUser = asyncHandler(async (req, res) => {
     "departmentID"
   );
   const departments = userDepartment.map((userDept) => userDept.departmentID);
+  // const departmentsID = userDepartment.map((userDept) => userDept._id);
+
   const userWithDepartment = { ...user.toObject(), departments };
   return res
     .status(200)

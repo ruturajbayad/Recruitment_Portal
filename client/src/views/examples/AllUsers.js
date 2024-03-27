@@ -70,7 +70,7 @@ const AllUsers = () => {
 
   const editUser = (e, userID) => {
     e.preventDefault();
-    navigate(`/admin/user-profile/${userID}`);
+    navigate(`/admin/update-user/${userID}`);
   };
 
   // if (isLodaing) {
@@ -120,7 +120,7 @@ const AllUsers = () => {
                         <Media>
                           <span className="mb-0 text-sm">
                             <Link
-                              to={`/admin/user-profile/${user._id}`}
+                              to={`/admin/update-user/${user._id}`}
                               className="text-white"
                             >
                               {user.firstName} {user.lastName}

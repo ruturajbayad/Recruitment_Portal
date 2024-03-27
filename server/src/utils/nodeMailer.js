@@ -1,4 +1,9 @@
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+dotenv.config({
+  path: "./.env",
+});
 
 export const mailer = (email, userID, token) => {
   var transporter = nodemailer.createTransport({
@@ -8,7 +13,7 @@ export const mailer = (email, userID, token) => {
     secure: false,
     auth: {
       user: "bayadruturaj5@gmail.com",
-      pass: "tmxc nnxv tjfg fedp",
+      pass: process.env.EMIL_PASS,
     },
   });
 

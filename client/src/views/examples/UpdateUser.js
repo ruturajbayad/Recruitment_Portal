@@ -16,7 +16,6 @@ import Multiselect from "multiselect-react-dropdown";
 import EmployeeHeader from "components/Headers/EmployeeHeader";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-// import { useNavigate } from "react-router-dom";
 
 const UpdateUser = () => {
   const initialUserData = {
@@ -27,11 +26,6 @@ const UpdateUser = () => {
     departments: [],
     UserRole: "",
   };
-  const [firstName, setFirstname] = useState("");
-  const [lastName, setLastname] = useState("");
-  const [email, setEmail] = useState("");
-  const [departments, setDepartment] = useState([]);
-  const [UserRole, setRole] = useState("");
   const [userData, setUserData] = useState(initialUserData);
   const [options, setOptions] = useState([]);
   const { id } = useParams();
@@ -57,18 +51,18 @@ const UpdateUser = () => {
           }
         );
         setUserData(response.data.data);
-        // console.log(response.data.data);
       } catch (error) {}
     }
-
     fatchData();
     fatchUser();
   }, [id]);
+
   const EditUser = async (e) => {
     e.preventDefault();
+    const { email, firstName, lastName, UserRole, departments } = userData;
     try {
-      const response = await axios.patch(
-        `http://localhost:4000/api/v1/users/updateDetails`,
+      const response = await axios.post(
+        `http://localhost:4000/api/v1/users/updateDetails/${id}`,
         {
           firstName,
           lastName,
@@ -81,12 +75,11 @@ const UpdateUser = () => {
         }
       );
       if (response.data.statusCode === 200) {
-        toast.success("Successfully Created User");
+        toast.success("Successfully Updated User");
         window.location.reload();
       }
     } catch (error) {
       toast.error("All Fields Required");
-      // throw new Error(error.message);
     }
   };
   const handelAdd = (departmentName) => {
@@ -94,11 +87,27 @@ const UpdateUser = () => {
       departmentName.includes(option.nameOfDepartment)
     );
     if (machingDepartments) {
-      setDepartment(machingDepartments.map((departmentId) => departmentId._id));
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        departments: machingDepartments,
+      }));
     }
   };
   const handelRemoveD = (remove) => {
-    setDepartment(departments.filter((d) => d !== remove));
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      departments: prevUserData.departments.filter((d) =>
+        remove.includes(d.nameOfDepartment)
+      ),
+    }));
+  };
+
+  const handelChange = (e) => {
+    const { name, value } = e.target;
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      [name]: value,
+    }));
   };
   return (
     <>
@@ -146,7 +155,8 @@ const UpdateUser = () => {
                         id="input-first-name"
                         placeholder="First name"
                         type="text"
-                        onChange={(e) => setFirstname(e.target.value)}
+                        name="firstName"
+                        onChange={handelChange}
                       />
                     </FormGroup>
                   </Col>
@@ -164,7 +174,8 @@ const UpdateUser = () => {
                         id="input-last-name"
                         placeholder="Last name"
                         type="text"
-                        onChange={(e) => setLastname(e.target.value)}
+                        name="lastName"
+                        onChange={handelChange}
                       />
                     </FormGroup>
                   </Col>
@@ -184,7 +195,8 @@ const UpdateUser = () => {
                         id="input-email"
                         placeholder="ruturaj@example.com"
                         type="email"
-                        onChange={(e) => setEmail(e.target.value)}
+                        name="email"
+                        onChange={handelChange}
                       />
                     </FormGroup>
                   </Col>
@@ -217,7 +229,6 @@ const UpdateUser = () => {
                           (departmentName) => departmentName.nameOfDepartment
                         )}
                         placeholder="Select Department"
-                        onChange={(e) => setFirstname(e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -236,8 +247,11 @@ const UpdateUser = () => {
                         onKeyPressFn={function noRefCheck() {}}
                         onRemove={function noRefCheck() {}}
                         onSearch={function noRefCheck() {}}
-                        onSelect={function noRefCheck(e) {
-                          setRole(e.at(0));
+                        onSelect={function noRefCheck(selectedValues) {
+                          setUserData((prevUserData) => ({
+                            ...prevUserData,
+                            UserRole: selectedValues[0],
+                          }));
                         }}
                         singleSelect="false"
                         options={["Admin", "HR", "Technical Person"]}

@@ -31,6 +31,7 @@ import AllCandidates from "views/examples/AllCandidates";
 import AddSchedule from "views/examples/AddSchedule";
 // import CandidateProfile from "views/examples/UpdateUser";
 import UpdateUser from "views/examples/UpdateUser";
+import UpdateCandidate from "views/examples/UpdateCandidate";
 // import ForgotPassword from "views/examples/ForgotPassWord";
 
 var routes = [
@@ -132,13 +133,23 @@ var routes = [
     icon: "ni ni-single-02 text-yellow",
     component: <Profile />,
     layout: "/admin",
+    hideInSidebar: true,
   },
   {
-    path: "/user-profile/:id",
+    path: "/update-user/:id",
     name: "Update User",
     icon: "ni ni-single-02 text-brown",
     component: <UpdateUser />,
     layout: "/admin",
+    hideInSidebar: true,
+  },
+  {
+    path: "/update-candidate/:id",
+    name: "Upade Candidate",
+    icon: "ni ni-single-02 text-brown",
+    component: <UpdateCandidate />,
+    layout: "/admin",
+    hideInSidebar: true,
   },
   // {
   //   path: "/tables",
