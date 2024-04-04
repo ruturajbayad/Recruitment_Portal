@@ -24,10 +24,12 @@ app.use(cookieParser());
 import userRouter from "./routes/user.routes.js";
 import candidateRouter from "./routes/candidate.routes.js";
 import departmentRouter from "./routes/department.routes.js";
+import schedulesRouter from "./routes/schedules.routes.js";
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/candidates", candidateRouter);
 app.use("/api/v1/department", departmentRouter);
+app.use("/api/v1/schedule", schedulesRouter);
 
 export { app };
 

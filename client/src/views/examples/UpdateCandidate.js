@@ -95,8 +95,6 @@ const UpdateCandidate = () => {
       experiance,
       departments,
     } = candidateData;
-    // console.log(email);
-    // console.log(candidateData);
     try {
       const formData = new FormData();
       formData.append("Firstname", Firstname);
@@ -423,7 +421,7 @@ const UpdateCandidate = () => {
                       <Multiselect
                         className="form-control-alternative bg-white"
                         selectedValues={[
-                          candidateData.isCurrentlyWorking === "true"
+                          candidateData.isCurrentlyWorking === true
                             ? "Yes"
                             : "No",
                         ]}

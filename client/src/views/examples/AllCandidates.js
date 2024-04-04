@@ -109,7 +109,8 @@ const AllCandidates = () => {
                         <Media>
                           <span className="mb-0 text-sm">
                             <Link
-                              to={`/admin/cadidate-profile/${candidate._id}`}
+                              to={`/admin/update-candidate/${candidate._id}`}
+                              className="text-white"
                             >
                               {candidate.Firstname} {candidate.Lastname}{" "}
                             </Link>
