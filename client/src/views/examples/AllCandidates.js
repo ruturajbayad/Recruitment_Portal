@@ -37,6 +37,7 @@ const AllCandidates = () => {
           }
         );
         const result = response.data.data;
+        // console.log(result);
         setCandidates(result);
       } catch (error) {
         toast.error("Something went wrong");

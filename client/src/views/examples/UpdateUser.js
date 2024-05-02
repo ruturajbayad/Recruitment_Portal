@@ -86,6 +86,7 @@ const UpdateUser = () => {
     const machingDepartments = options.filter((option) =>
       departmentName.includes(option.nameOfDepartment)
     );
+    // console.log(machingDepartments);
     if (machingDepartments) {
       setUserData((prevUserData) => ({
         ...prevUserData,
