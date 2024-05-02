@@ -1,4 +1,5 @@
 import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import {
   Button,
@@ -24,7 +25,8 @@ const ResetPassword = () => {
 
   const resetPassword = async (e) => {
     if (!(newPassword === confirmPassword)) {
-      alert("Password are not correct");
+      setTimeout(() => toast.error("Please enter a correct password"), 5000);
+      window.location.reload();
     }
     e.preventDefault();
     await axios
@@ -36,18 +38,20 @@ const ResetPassword = () => {
       )
       .then((response) => {
         if (response.data.statusCode === 200) {
-          alert("Password reset successful ✔");
+          toast.success("Password reset successful ✔");
           navigate("/auth/login");
         }
       })
       .catch((err) => {
-        if (err.code === "ERR_BAD_REQUEST")
-          alert("User not found: " + err.message);
+        if (err.code === "ERR_BAD_REQUEST") toast.error("Link is expired");
       });
   };
 
   return (
     <>
+      <div>
+        <Toaster position="top-center" reverseOrder={false} />
+      </div>
       <Col lg="5" md="7">
         <Card className="bg-secondary shadow border-0">
           <CardHeader className="bg-transparent pb-2">

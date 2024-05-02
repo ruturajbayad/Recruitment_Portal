@@ -33,7 +33,7 @@ const Footer = () => {
               rel="noopener noreferrer"
               target="_blank"
             >
-              Creative Tim
+              Recruitment Portal
             </a>
           </div>
         </Col>
@@ -60,7 +60,7 @@ const Footer = () => {
               </NavLink>
             </NavItem>
 
-            <NavItem>
+            {/* <NavItem>
               <NavLink
                 href="http://blog.creative-tim.com?ref=adr-admin-footer"
                 rel="noopener noreferrer"
@@ -78,7 +78,7 @@ const Footer = () => {
               >
                 MIT License
               </NavLink>
-            </NavItem>
+            </NavItem> */}
           </Nav>
         </Col>
       </Row>

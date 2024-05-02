@@ -128,7 +128,7 @@ var routes = [
   //   layout: "/admin",
   // },
   {
-    path: "/user-profile",
+    path: "/user-profile/:id",
     name: "User Profile",
     icon: "ni ni-single-02 text-yellow",
     component: <Profile />,

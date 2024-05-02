@@ -17,6 +17,8 @@
 */
 
 // reactstrap components
+import React, { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import {
   Button,
   Card,
@@ -31,11 +33,108 @@ import {
 } from "reactstrap";
 // core components
 import UserHeader from "components/Headers/UserHeader.js";
+import Multiselect from "multiselect-react-dropdown";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const Profile = () => {
-  const userData = JSON.parse(localStorage.getItem("user"));
+  const initialUserData = {
+    firstName: "",
+    lastName: "",
+    password: "",
+    email: "",
+    departments: [],
+    UserRole: "",
+  };
+  const [userData, setUserData] = useState(initialUserData);
+  const [options, setOptions] = useState([]);
+  const { id } = useParams();
+  // const navigates = useNavigate();
+
+  useEffect(() => {
+    async function fatchData() {
+      try {
+        const response = await axios.get(
+          "http://localhost:4000/api/v1/department/departments"
+        );
+        setOptions(response.data.data);
+      } catch (error) {
+        throw new Error(error.message);
+      }
+    }
+    async function fatchUser() {
+      try {
+        const response = await axios.get(
+          `http://localhost:4000/api/v1/users/get-user/${id}`,
+          {
+            withCredentials: true,
+          }
+        );
+        setUserData(response.data.data);
+      } catch (error) {}
+    }
+    fatchData();
+    fatchUser();
+  }, [id]);
+
+  const EditUser = async (e) => {
+    e.preventDefault();
+    const { email, firstName, lastName, UserRole, departments } = userData;
+    try {
+      const response = await axios.post(
+        `http://localhost:4000/api/v1/users/updateDetails/${id}`,
+        {
+          firstName,
+          lastName,
+          email,
+          UserRole,
+          departments,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      if (response.data.statusCode === 200) {
+        toast.success("Successfully Updated User");
+        window.location.reload();
+      }
+    } catch (error) {
+      toast.error("All Fields Required");
+    }
+  };
+  const handelAdd = (departmentName) => {
+    const machingDepartments = options.filter((option) =>
+      departmentName.includes(option.nameOfDepartment)
+    );
+    // console.log(machingDepartments);
+    if (machingDepartments) {
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        departments: machingDepartments,
+      }));
+    }
+  };
+  const handelRemoveD = (remove) => {
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      departments: prevUserData.departments.filter((d) =>
+        remove.includes(d.nameOfDepartment)
+      ),
+    }));
+  };
+
+  const handelChange = (e) => {
+    const { name, value } = e.target;
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      [name]: value,
+    }));
+  };
   return (
     <>
+      <div>
+        <Toaster position="top-center" reverseOrder={false} />
+      </div>
       <UserHeader />
       {/* Page content */}
       <Container className="mt--7" fluid>
@@ -103,25 +202,32 @@ const Profile = () => {
                   </h3>
                   <div className="h5 font-weight-300">
                     <i className="ni location_pin mr-2" />
-                    Bucharest, Romania
+                    {userData.UserRole}
                   </div>
-                  <div className="h5 mt-4">
+                  {/* <div className="h5 mt-4">
                     <i className="ni business_briefcase-24 mr-2" />
                     Solution Manager - Creative Tim Officer
-                  </div>
-                  <div>
+                  </div> */}
+                  {/* <div>
                     <i className="ni education_hat mr-2" />
                     University of Computer Science
-                  </div>
+                  </div> */}
                   <hr className="my-4" />
-                  <p>
-                    Ryan — the name taken by Melbourne-raised, Brooklyn-based
-                    Nick Murphy — writes, performs and records all of his own
-                    music.
-                  </p>
-                  <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                  {/* <p>
+                    Departments{" "}
+                    {userData.departments &&
+                      userData.departments.map((department) => {
+                        return (
+                          <div>
+                            <i className="ni education_hat mr-2" />
+                            {department}
+                          </div>
+                        );
+                      })}
+                  </p> */}
+                  {/* <a href="#pablo" onClick={(e) => e.preventDefault()}>
                     Show more
-                  </a>
+                  </a> */}
                 </div>
               </CardBody>
             </Card>
@@ -131,16 +237,16 @@ const Profile = () => {
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">My account</h3>
+                    <h3 className="mb-0">Edit Users</h3>
                   </Col>
                   <Col className="text-right" xs="4">
                     <Button
                       color="primary"
                       href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                      size="sm"
+                      onClick={(e) => EditUser(e)}
+                      size="medium"
                     >
-                      Settings
+                      Update
                     </Button>
                   </Col>
                 </Row>
@@ -156,51 +262,18 @@ const Profile = () => {
                         <FormGroup>
                           <label
                             className="form-control-label"
-                            htmlFor="input-username"
-                          >
-                            Username
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            defaultValue="Ruturaj bayad"
-                            id="input-username"
-                            placeholder="Username"
-                            type="text"
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-email"
-                          >
-                            Email address
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-email"
-                            placeholder="Ruturaj@example.com"
-                            type="email"
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg="6">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
                             htmlFor="input-first-name"
                           >
                             First name
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue="Ruturaj"
+                            defaultValue={userData.firstName}
                             id="input-first-name"
                             placeholder="First name"
                             type="text"
+                            name="firstName"
+                            onChange={handelChange}
                           />
                         </FormGroup>
                       </Col>
@@ -214,10 +287,33 @@ const Profile = () => {
                           </label>
                           <Input
                             className="form-control-alternative"
-                            defaultValue="Bayad"
+                            defaultValue={userData.lastName}
                             id="input-last-name"
                             placeholder="Last name"
                             type="text"
+                            name="lastName"
+                            onChange={handelChange}
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col lg="6">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-email"
+                          >
+                            Email address
+                          </label>
+                          <Input
+                            className="form-control-alternative"
+                            defaultValue={userData.email}
+                            id="input-email"
+                            placeholder="ruturaj@example.com"
+                            type="email"
+                            name="email"
+                            onChange={handelChange}
                           />
                         </FormGroup>
                       </Col>
@@ -226,96 +322,64 @@ const Profile = () => {
                   <hr className="my-4" />
                   {/* Address */}
                   <h6 className="heading-small text-muted mb-4">
-                    Contact information
+                    Department info
                   </h6>
                   <div className="pl-lg-4">
                     <Row>
-                      <Col md="12">
+                      <Col md="6">
                         <FormGroup>
                           <label
                             className="form-control-label"
-                            htmlFor="input-address"
+                            htmlFor="input-password"
                           >
-                            Address
+                            Department
                           </label>
-                          <Input
+                          <Multiselect
+                            selectedValues={userData.departments.map(
+                              (department) => department.nameOfDepartment
+                            )}
                             className="form-control-alternative"
-                            defaultValue="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
-                            id="input-address"
-                            placeholder="Home Address"
-                            type="text"
+                            isObject={false}
+                            onKeyPressFn={function noRefCheck() {}}
+                            onRemove={handelRemoveD}
+                            onSearch={function noRefCheck() {}}
+                            onSelect={handelAdd}
+                            options={options.map(
+                              (departmentName) =>
+                                departmentName.nameOfDepartment
+                            )}
+                            placeholder="Select Department"
                           />
                         </FormGroup>
                       </Col>
+                      {/* <Col md="6">
+                        <FormGroup>
+                          <label
+                            className="form-control-label"
+                            htmlFor="input-password"
+                          >
+                            Role
+                          </label>
+                          <Multiselect
+                            selectedValues={[userData.UserRole]}
+                            className="form-control-alternative"
+                            isObject={false}
+                            onKeyPressFn={function noRefCheck() {}}
+                            onRemove={function noRefCheck() {}}
+                            onSearch={function noRefCheck() {}}
+                            onSelect={function noRefCheck(selectedValues) {
+                              setUserData((prevUserData) => ({
+                                ...prevUserData,
+                                UserRole: selectedValues[0],
+                              }));
+                            }}
+                            singleSelect="false"
+                            options={["Admin", "HR", "Technical Person"]}
+                            placeholder="Select Role"
+                          />
+                        </FormGroup>
+                      </Col> */}
                     </Row>
-                    <Row>
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-city"
-                          >
-                            City
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            defaultValue="New York"
-                            id="input-city"
-                            placeholder="City"
-                            type="text"
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-country"
-                          >
-                            Country
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            defaultValue="United States"
-                            id="input-country"
-                            placeholder="Country"
-                            type="text"
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col lg="4">
-                        <FormGroup>
-                          <label
-                            className="form-control-label"
-                            htmlFor="input-country"
-                          >
-                            Postal code
-                          </label>
-                          <Input
-                            className="form-control-alternative"
-                            id="input-postal-code"
-                            placeholder="Postal code"
-                            type="number"
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </div>
-                  <hr className="my-4" />
-                  {/* Description */}
-                  <h6 className="heading-small text-muted mb-4">About me</h6>
-                  <div className="pl-lg-4">
-                    <FormGroup>
-                      <label>About Me</label>
-                      <Input
-                        className="form-control-alternative"
-                        placeholder="A few words about you ..."
-                        rows="4"
-                        defaultValue="A beautiful Dashboard for Bootstrap 4. It is Free and
-                        Open Source."
-                        type="textarea"
-                      />
-                    </FormGroup>
                   </div>
                 </Form>
               </CardBody>

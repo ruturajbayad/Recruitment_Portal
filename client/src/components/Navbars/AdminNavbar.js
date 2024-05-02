@@ -38,6 +38,7 @@ import {
 const AdminNavbar = (props) => {
   const navigate = useNavigate();
   const userData = JSON.parse(localStorage.getItem("user"));
+  console.log(userData);
   const logoutUser = async (e) => {
     e.preventDefault();
 
@@ -110,7 +111,7 @@ const AdminNavbar = (props) => {
                       : userData.UserRole === "Technical Person"
                       ? "employee"
                       : null
-                  }/user-profile`}
+                  }/user-profile/${userData._id}`}
                   tag={Link}
                 >
                   <i className="ni ni-single-02" />

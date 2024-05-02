@@ -333,7 +333,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
   }
 
   const token = jwt.sign({ id: user._id }, process.env.RESET_TOKEN_SECRET, {
-    expiresIn: "1d",
+    expiresIn: "60m",
   });
 
   const response = mailer(user.email, user._id, token);
@@ -346,23 +346,27 @@ const forgotPassword = asyncHandler(async (req, res) => {
     .json(new ApiResponce(200, {}, "Password reset link sent to your email"));
 });
 
-// ! RESER PASSWORD
+// ! RESET PASSWORD
 const resetPassword = asyncHandler(async (req, res) => {
   const { id, token } = req.params;
   const { newPassword } = req.body;
 
-  jwt.verify(token, process.env.RESET_TOKEN_SECRET);
+  try {
+    const decodedToken = jwt.verify(token, process.env.RESET_TOKEN_SECRET);
 
-  const user = await User.findById(id);
+    const user = await User.findById(decodedToken?.id);
 
-  if (!user) {
-    throw new ApiError(404, "User not found");
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+    user.password = newPassword;
+    await user.save({ validateBeforeSave: false });
+    return res
+      .status(200)
+      .json(new ApiResponce(200, {}, "password updated successfully"));
+  } catch (error) {
+    throw new ApiError(401, "Link is expired");
   }
-  user.password = newPassword;
-  await user.save({ validateBeforeSave: false });
-  return res
-    .status(200)
-    .json(new ApiResponce(200, {}, "password updated successfully"));
 });
 
 // ! AUTHENTICATION

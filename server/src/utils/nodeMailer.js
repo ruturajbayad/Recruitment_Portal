@@ -28,7 +28,9 @@ export const mailer = (email, userID, token) => {
     html: `<body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
       <tr>
-      <p> Please click below Reset Button to get redirected 🚀 to reset password page : </p>
+      <p style="font-size: 16px; color: #555; font-family: 'Arial', sans-serif; line-height: 1.6;">
+      Please click the button below to be redirected 🚀 to the password reset page:
+      </p>
       <br/>
       <tr/>
       <tr>
@@ -42,6 +44,10 @@ export const mailer = (email, userID, token) => {
           </table>
         </td>
       </tr>
+      <tr>
+      <p style="color:red">Note : This password reset link will expire in 60 minutes </p>
+      <br/>
+      <tr/>
     </table>
   </body>`,
   };
