@@ -42,7 +42,7 @@ const Employee = (props) => {
     if (!userData || !userData._id) {
       throw new Error("User data or user ID not found");
     }
-    console.log(userData);
+    // console.log(userData);
     if (userData.UserRole === "admin") {
       navigate("/admin/index");
     } else if (userData.UserRole === "HR") {

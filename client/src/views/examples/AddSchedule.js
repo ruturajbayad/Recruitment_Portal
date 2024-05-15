@@ -18,99 +18,115 @@ import axios from "axios";
 // import { useNavigate } from "react-router-dom";
 
 const AddSchedule = () => {
-  const [Firstname, setFirstname] = useState("");
-  const [Lastname, setLastname] = useState("");
-  const [email, setEmail] = useState("");
-  const [mobileNo, setMobileNO] = useState(0);
-  const [Dob, setDob] = useState("");
-  const [education, setEducation] = useState("");
-  const [experiance, setExperiance] = useState("");
-  const [gender, setGender] = useState("");
-  const [workLocation, setWorkLocation] = useState("");
-  const [currentCompany, setCurrentCompany] = useState(false);
-  const [currentlyWorking, setCurrentlyWorking] = useState();
-  const [CTC, setCTC] = useState("");
-  const [ETC, setETC] = useState("");
-  const [isNegotiable, setIsNegotiable] = useState(false);
-  const [reasonforChange, setReasonforChange] = useState("");
-  const [noticePeriod, setNoticePeriod] = useState(0);
-  const [isAnyGap, setIsAnyGap] = useState(false);
   const [options, setOptions] = useState([]);
-  const [resume, setResume] = useState();
-  const [departments, setDepartment] = useState([]);
-  // const navigates = useNavigate();
+  const [departments, setDepartments] = useState([]);
+  const [candidates, setCandidates] = useState([]);
+  const [round, setRound] = useState([]);
+  const [interviewers, setInterviewers] = useState([]);
+  const [filteredInterviewers, setFilteredInterviewers] = useState([]);
+  const [scheduleInfo, setScheduleInfo] = useState({
+    candidateID: "",
+    interviewer: "",
+    round: "",
+    dateTime: "",
+  });
+
+  // Fetch data on mount
   useEffect(() => {
-    async function fatchData() {
+    async function fetchData() {
       try {
-        const response = await axios.get(
+        const departmentResponse = await axios.get(
           "http://localhost:4000/api/v1/department/departments"
         );
-        setOptions(response.data.data);
+        setOptions(departmentResponse.data.data);
+
+        const scheduleResponse = await axios.get(
+          "http://localhost:4000/api/v1/schedule/show-data",
+          { withCredentials: true }
+        );
+        const { populatedCandidates = [], populatedInterViewer = [] } =
+          scheduleResponse.data.data;
+
+        setCandidates(populatedCandidates);
+        setInterviewers(populatedInterViewer);
       } catch (error) {
-        throw new Error(error.message);
+        toast.error(error.message);
       }
     }
-    fatchData();
+    fetchData();
   }, []);
 
-  const AddCandidate = async (e) => {
-    e.preventDefault();
-    // console.log(departments);
+  const handleCreateSchedule = async () => {
     try {
-      const formData = new FormData();
-      formData.append("Firstname", Firstname);
-      formData.append("Lastname", Lastname);
-      formData.append("email", email);
-      formData.append("mobileNo", mobileNo);
-      formData.append("DoB", Dob);
-      formData.append("education", education);
-      formData.append("gender", gender);
-      formData.append("WorkLocation", workLocation);
-      formData.append("CurrentCompany", currentCompany);
-      formData.append("isCurrentlyWorking", currentlyWorking);
-      formData.append("CTC", CTC);
-      formData.append("ETC", ETC);
-      formData.append("isNegotiable", isNegotiable);
-      formData.append("ReasonforChange", reasonforChange);
-      formData.append("NoticePeriod", noticePeriod);
-      formData.append("isAnyGap", isAnyGap);
-      formData.append("experiance", experiance);
-      formData.append("resume", resume);
-      formData.append("departments", departments);
-      // console.log(Firstname, Lastname, email, isAnyGap);
-      // for (const pair of formData.entries()) {
-      //   console.log(pair[0] + ", " + pair[1]);
-      // }
       const response = await axios.post(
-        "http://localhost:4000/api/v1/candidates/uploadCandidateDetails",
-        formData,
+        "http://localhost:4000/api/v1/schedule/create-schedule",
+        scheduleInfo,
         {
           withCredentials: true,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
         }
       );
-      if (response.data.statusCode === 200) {
-        toast.success("Successfully Added Candidate");
-        window.location.reload();
-      }
+      toast.success(response.data.message);
+      window.location.reload();
     } catch (error) {
-      toast.error("All Fields Required");
-      // throw new Error(error.message);
+      toast.error(error.response.data.message);
     }
   };
-  const handelAdd = (departmentName) => {
-    const machingDepartments = options.filter((option) =>
-      departmentName.includes(option.nameOfDepartment)
+
+  // Handle selecting a candidate
+  const handleCandidateSelect = (selectedList) => {
+    const selectedCandidateName = selectedList[0];
+    const candidate = candidates.find(
+      (candidate) =>
+        candidate.Firstname + " " + candidate.Lastname === selectedCandidateName
     );
-    if (machingDepartments) {
-      setDepartment(machingDepartments.map((departmentId) => departmentId._id));
+
+    if (candidate) {
+      const candidateDepartments = candidate.departments.map((dep) => dep._id);
+      const matchingInterviewers = interviewers.filter((interviewer) =>
+        interviewer.departments.some((dep) =>
+          candidateDepartments.includes(dep._id)
+        )
+      );
+      setFilteredInterviewers(matchingInterviewers);
+
+      // Update scheduleInfo with candidate ID
+      setScheduleInfo((prevInfo) => ({
+        ...prevInfo,
+        candidateID: candidate._id,
+      }));
+    } else {
+      setFilteredInterviewers([]);
     }
   };
-  const handelRemoveD = (remove) => {
-    setDepartment(departments.filter((d) => d !== remove));
+
+  // Handle removing a candidate
+  const handleCandidateRemove = () => {
+    setFilteredInterviewers([]);
+    // Reset candidate ID in scheduleInfo
+    setScheduleInfo((prevInfo) => ({
+      ...prevInfo,
+      candidateID: "",
+    }));
   };
+
+  // Handle selecting an interviewer
+  const handleInterviewerSelect = (selectedList) => {
+    const selectedInterviewerName = selectedList[0];
+    const interviewer = interviewers.find(
+      (interviewer) =>
+        interviewer.firstName + " " + interviewer.lastName ===
+        selectedInterviewerName
+    );
+
+    if (interviewer) {
+      // Update scheduleInfo with interviewer ID
+      setScheduleInfo((prevInfo) => ({
+        ...prevInfo,
+        interviewer: interviewer._id,
+      }));
+    }
+  };
+
   return (
     <>
       <div>
@@ -122,13 +138,12 @@ const AddSchedule = () => {
           <CardHeader className="bg-white border-0">
             <Row className="align-items-center">
               <Col xs="8">
-                <h3 className="mb-0">Create Schdule</h3>
+                <h3 className="mb-0">Create Schedule</h3>
               </Col>
               <Col className="text-right" xs="4">
                 <Button
                   color="primary"
-                  href="#pablo"
-                  onClick={(e) => AddCandidate(e)}
+                  onClick={handleCreateSchedule}
                   size="medium"
                 >
                   Create
@@ -138,29 +153,30 @@ const AddSchedule = () => {
           </CardHeader>
           <CardBody>
             <Form>
-              <h6 className="heading-small text-muted mb-4">Schdule Info</h6>
+              <h6 className="heading-small text-muted mb-4">Schedule Info</h6>
               <div className="pl-lg-4">
                 <Row>
                   <Col md="6">
                     <FormGroup>
                       <label
                         className="form-control-label"
-                        htmlFor="input-password"
+                        htmlFor="input-candidate"
                       >
-                        Select Department
+                        Select Candidate
                       </label>
                       <Multiselect
                         className="form-control-alternative bg-white"
                         isObject={false}
-                        onKeyPressFn={function noRefCheck() {}}
-                        onRemove={handelRemoveD}
-                        onSearch={function noRefCheck() {}}
-                        onSelect={handelAdd}
-                        options={options.map(
-                          (departmentName) => departmentName.nameOfDepartment
+                        onKeyPressFn={() => {}}
+                        onSearch={() => {}}
+                        onSelect={handleCandidateSelect}
+                        onRemove={handleCandidateRemove}
+                        singleSelect={true}
+                        options={candidates.map(
+                          (candidate) =>
+                            candidate.Firstname + " " + candidate.Lastname
                         )}
-                        placeholder="Select Department"
-                        onChange={(e) => setFirstname(e.target.value)}
+                        placeholder="Select Candidate"
                       />
                     </FormGroup>
                   </Col>
@@ -168,26 +184,22 @@ const AddSchedule = () => {
                     <FormGroup>
                       <label
                         className="form-control-label"
-                        htmlFor="input-password"
+                        htmlFor="input-interviewer"
                       >
-                        Select Candidate
+                        Select Interviewer
                       </label>
                       <Multiselect
                         className="form-control-alternative bg-white"
                         isObject={false}
-                        onKeyPressFn={function noRefCheck() {}}
-                        onRemove={function noRefCheck() {}}
-                        onSearch={function noRefCheck() {}}
-                        onSelect={function noRefCheck(e) {
-                          setWorkLocation(e.at(0));
-                        }}
-                        singleSelect="false"
-                        options={[
-                          "Work from Home",
-                          "Work From Office",
-                          "Hybrid",
-                        ]}
-                        placeholder="Select Candidate"
+                        onKeyPressFn={() => {}}
+                        onSearch={() => {}}
+                        onSelect={handleInterviewerSelect}
+                        singleSelect={true}
+                        options={filteredInterviewers.map(
+                          (interviewer) =>
+                            interviewer.firstName + " " + interviewer.lastName
+                        )}
+                        placeholder="Select Interviewer"
                       />
                     </FormGroup>
                   </Col>
@@ -197,33 +209,21 @@ const AddSchedule = () => {
                     <FormGroup>
                       <label
                         className="form-control-label"
-                        htmlFor="input-number"
+                        htmlFor="input-datetime"
                       >
-                        Select Date of Interview
+                        Select Date And Time of Interview
                       </label>
                       <Input
                         className="form-control-alternative"
-                        id="input-number"
-                        placeholder="DoB"
-                        type="Date"
-                        onChange={(e) => setDob(e.target.value)}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col lg="6">
-                    <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-number"
-                      >
-                        Time Of Interview
-                      </label>
-                      <Input
-                        className="form-control-alternative"
-                        id="input-number"
-                        placeholder="Interview Time"
-                        type="text"
-                        onChange={(e) => setMobileNO(e.target.value)}
+                        id="input-datetime"
+                        placeholder="Date and Time"
+                        type="datetime-local"
+                        onChange={(e) =>
+                          setScheduleInfo((prevInfo) => ({
+                            ...prevInfo,
+                            dateTime: e.target.value,
+                          }))
+                        }
                       />
                     </FormGroup>
                   </Col>
@@ -231,57 +231,24 @@ const AddSchedule = () => {
                     <FormGroup>
                       <label
                         className="form-control-label"
-                        htmlFor="input-password"
+                        htmlFor="input-round"
                       >
-                        Select Interviewer
+                        Interview Round
                       </label>
                       <Multiselect
                         className="form-control-alternative bg-white"
                         isObject={false}
-                        onKeyPressFn={function noRefCheck() {}}
-                        onRemove={function noRefCheck() {}}
-                        onSearch={function noRefCheck() {}}
-                        onSelect={function noRefCheck(e) {
-                          setWorkLocation(e.at(0));
-                        }}
-                        singleSelect="false"
-                        options={[
-                          "Work from Home",
-                          "Work From Office",
-                          "Hybrid",
-                        ]}
-                        placeholder="Select Interviewer"
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <label
-                        className="form-control-label"
-                        htmlFor="input-education"
-                      >
-                        Interview round
-                      </label>
-                      <Multiselect
-                        className="form-control-alternative bg-white "
-                        isObject={false}
-                        onKeyPressFn={function noRefCheck() {}}
-                        onRemove={function noRefCheck() {}}
-                        onSearch={function noRefCheck() {}}
-                        onSelect={function noRefCheck(e) {
-                          setEducation(e.at(0));
-                        }}
-                        singleSelect="false"
-                        options={[
-                          "BSC",
-                          "MSC",
-                          "BE IT",
-                          "BE Computer",
-                          "ME IT",
-                          "ME Computer",
-                          "Other",
-                        ]}
-                        placeholder="Select round"
+                        onKeyPressFn={() => {}}
+                        onSearch={() => {}}
+                        onSelect={(selectedList) =>
+                          setScheduleInfo((prevInfo) => ({
+                            ...prevInfo,
+                            round: selectedList[0],
+                          }))
+                        }
+                        singleSelect={true}
+                        options={["1", "2", "3"]}
+                        placeholder="Select Round"
                       />
                     </FormGroup>
                   </Col>

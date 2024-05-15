@@ -198,7 +198,7 @@ const SingleCandidate = asyncHandler(async (req, res) => {
 
 // ! Update Cadnididate Details
 const updatecandidate = asyncHandler(async (req, res) => {
-  const {
+  let {
     Firstname,
     Lastname,
     email,
@@ -219,6 +219,8 @@ const updatecandidate = asyncHandler(async (req, res) => {
     departments,
   } = req.body;
   const candidateID = req.params.id;
+  if (CTC === null || isNaN(CTC)) CTC = 0;
+  if (ETC === null || isNaN(ETC)) ETC = 0;
 
   if (!candidateID) throw new ApiError(400, "Id is required");
 

@@ -58,7 +58,6 @@ const AddCandidate = () => {
 
   const AddCandidate = async (e) => {
     e.preventDefault();
-    // console.log(departments);
     const {
       Firstname,
       Lastname,

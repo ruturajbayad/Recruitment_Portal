@@ -32,6 +32,7 @@ import AddSchedule from "views/examples/AddSchedule";
 // import CandidateProfile from "views/examples/UpdateUser";
 import UpdateUser from "views/examples/UpdateUser";
 import UpdateCandidate from "views/examples/UpdateCandidate";
+import AllSchedule from "views/examples/AllSchedule";
 // import ForgotPassword from "views/examples/ForgotPassWord";
 
 var routes = [
@@ -45,9 +46,17 @@ var routes = [
   {
     path: "/add-user",
     name: "Add User",
-    icon: "ni ni-fat-add text-red",
+    icon: "ni ni-fat-add text-green",
     component: <AddEmployees />,
     layout: "/admin",
+  },
+  {
+    path: "/add-candidate",
+    name: "Add Candidate",
+    icon: "ni ni-fat-add text-orange",
+    component: <AddCandidate />,
+    layout: "/admin",
+    hideInSidebar: false,
   },
   {
     path: "/login",
@@ -84,7 +93,7 @@ var routes = [
   {
     path: "/all-users",
     name: "Users",
-    icon: "ni ni-single-02 text-yellow",
+    icon: "ni ni-circle-08 text-green",
     component: <AllUsers />,
     layout: "/admin",
     hideInSidebar: false,
@@ -97,24 +106,16 @@ var routes = [
   //   layout: "/admin",
   // },
   {
-    path: "/add-candidate",
-    name: "Add Candidate",
-    icon: "ni ni-fat-add text-green",
-    component: <AddCandidate />,
-    layout: "/admin",
-    hideInSidebar: false,
-  },
-  {
     path: "/show-candidate",
     name: "Candidates",
-    icon: "ni ni-circle-08 text-green",
+    icon: "ni ni-single-02 text-orange",
     component: <AllCandidates />,
     layout: "/admin",
     hideInSidebar: false,
   },
   {
     path: "/schdule",
-    name: "Schedule",
+    name: "Schedule Interview",
     icon: "ni ni-calendar-grid-58 text-blue",
     component: <AddSchedule />,
     layout: "/admin",
@@ -150,6 +151,14 @@ var routes = [
     component: <UpdateCandidate />,
     layout: "/admin",
     hideInSidebar: true,
+  },
+  {
+    path: "/all-schedule",
+    name: "All Schedule",
+    icon: "ni ni-archive-2 text-red",
+    component: <AllSchedule />,
+    layout: "/admin",
+    hideInSidebar: false,
   },
   // {
   //   path: "/tables",

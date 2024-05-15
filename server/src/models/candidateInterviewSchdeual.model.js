@@ -17,7 +17,12 @@ const candidateInterviewScheduleSchema = new mongoose.Schema(
       ref: "CandidateStatus",
       // required: true,
     },
-    DateTime: {
+    round: {
+      type: Number,
+      required: true,
+      default: 1,
+    },
+    dateTime: {
       type: Date,
       required: true,
     },

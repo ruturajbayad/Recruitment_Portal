@@ -20,6 +20,11 @@ const interviewSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    roundofinterview: {
+      type: Number,
+      required: true,
+      default: 1,
+    },
   },
   {
     timestamps: true,

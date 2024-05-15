@@ -117,7 +117,7 @@ const AdminNavbar = (props) => {
                   <i className="ni ni-single-02" />
                   <span>My profile</span>
                 </DropdownItem>
-                <DropdownItem
+                {/* <DropdownItem
                   to={`/${
                     userData.UserRole === "HR"
                       ? "hr"
@@ -162,7 +162,7 @@ const AdminNavbar = (props) => {
                   <i className="ni ni-support-16" />
                   <span>Support</span>
                 </DropdownItem>
-                <DropdownItem divider />
+                <DropdownItem divider /> */}
                 <DropdownItem onClick={(e) => logoutUser(e)}>
                   <i className="ni ni-user-run" />
                   <span>Logout</span>
