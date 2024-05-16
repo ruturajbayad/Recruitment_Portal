@@ -1,3 +1,157 @@
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  Card,
+  CardHeader,
+  DropdownMenu,
+  DropdownItem,
+  UncontrolledDropdown,
+  DropdownToggle,
+  Media,
+  Table,
+  Container,
+  Row,
+} from "reactstrap";
+
+import Header from "components/Headers/Header.js";
+
+const Index = (props) => {
+  const [candidates, setCandidates] = useState([]);
+  // const navigate = useNavigate();
+  // console.log(userData);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:4000/api/v1/schedule/all-schedules",
+          {
+            withCredentials: true,
+          }
+        );
+        // console.log(userData);
+        setCandidates(response.data.data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+        // Display toast message or handle error as needed
+      }
+    };
+    fetchData();
+  }, []);
+
+  const deleteCandidate = async (e, scheduleId) => {
+    e.preventDefault();
+    try {
+      await axios.delete(
+        `http://localhost:4000/api/v1/schedule/delete-schedule/${scheduleId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      // Display success message using toast
+      console.log("Schedule deleted successfully");
+      // Reload the page after deletion
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting schedule: ", error);
+      // Display error message using toast or handle error as needed
+    }
+  };
+
+  return (
+    <>
+      <Header />
+      <Container className="mt--9" fluid>
+        <Row className="mt-5">
+          <div className="col">
+            <Card className="bg-default shadow">
+              <CardHeader className="bg-transparent border-0">
+                <h3 className="text-white mb-0">Candidates</h3>
+              </CardHeader>
+              <Table
+                className="align-items-center table-dark table-flush"
+                responsive
+              >
+                <thead className="thead-dark">
+                  <tr>
+                    <th scope="col">Candidate</th>
+                    <th scope="col">Interviewer</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {candidates.map((schedule) => (
+                    <tr key={schedule._id}>
+                      <th scope="row">
+                        <Media>
+                          <span className="mb-0 text-sm">
+                            <Link
+                              to={`/admin/update-candidate/${schedule.candidateID._id}`}
+                              className="text-white"
+                            >
+                              {schedule.candidateID.Firstname}{" "}
+                              {schedule.candidateID.Lastname}
+                            </Link>
+                          </span>
+                        </Media>
+                      </th>
+                      <th>
+                        <Media>
+                          <span className="mb-0 text-sm">
+                            <Link
+                              to={`/admin/update-user/${schedule.interviewer._id}`}
+                              className="text-white"
+                            >
+                              {schedule.interviewer.firstName}{" "}
+                              {schedule.interviewer.lastName}
+                            </Link>
+                          </span>
+                        </Media>
+                      </th>
+                      <td>
+                        {new Date(schedule.dateTime).toLocaleDateString()}
+                      </td>
+                      <td>
+                        {new Date(schedule.dateTime).toLocaleTimeString()}
+                      </td>
+                      <td className="text-center pr-4 pl-0 ">
+                        <UncontrolledDropdown>
+                          <DropdownToggle
+                            className="btn-icon-only text-light"
+                            href="#pablo"
+                            role="button"
+                            size="sm"
+                            color=""
+                            onClick={(e) => e.preventDefault()}
+                          >
+                            <i className="fas fa-ellipsis-v" />
+                          </DropdownToggle>
+                          <DropdownMenu className="dropdown-menu-arrow" right>
+                            <DropdownItem
+                              href="#pablo"
+                              onClick={(e) => deleteCandidate(e, schedule._id)}
+                            >
+                              Delete
+                            </DropdownItem>
+                          </DropdownMenu>
+                        </UncontrolledDropdown>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Card>
+          </div>
+        </Row>
+      </Container>
+    </>
+  );
+};
+
+export default Index;
+
 // /*!
 
 // =========================================================
@@ -345,158 +499,3 @@
 // };
 
 // export default Index;
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  Badge,
-  Card,
-  CardHeader,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Media,
-  Table,
-  Container,
-  Row,
-  UncontrolledTooltip,
-} from "reactstrap";
-
-import Header from "components/Headers/Header.js";
-import AllSchedule from "./examples/AllSchedule";
-const Index = (props) => {
-  const [candidates, setCandidates] = useState([]);
-  const navigate = useNavigate();
-  // console.log(userData);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:4000/api/v1/schedule/all-schedules",
-          {
-            withCredentials: true,
-          }
-        );
-        // console.log(userData);
-        setCandidates(response.data.data);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-        // Display toast message or handle error as needed
-      }
-    };
-    fetchData();
-  }, []);
-
-  const deleteCandidate = async (e, scheduleId) => {
-    e.preventDefault();
-    try {
-      await axios.delete(
-        `http://localhost:4000/api/v1/schedule/delete-schedule/${scheduleId}`,
-        {
-          withCredentials: true,
-        }
-      );
-      // Display success message using toast
-      console.log("Schedule deleted successfully");
-      // Reload the page after deletion
-      window.location.reload();
-    } catch (error) {
-      console.error("Error deleting schedule: ", error);
-      // Display error message using toast or handle error as needed
-    }
-  };
-
-  return (
-    <>
-      <Header />
-      <Container className="mt--9" fluid>
-        <Row className="mt-5">
-          <div className="col">
-            <Card className="bg-default shadow">
-              <CardHeader className="bg-transparent border-0">
-                <h3 className="text-white mb-0">Candidates</h3>
-              </CardHeader>
-              <Table
-                className="align-items-center table-dark table-flush"
-                responsive
-              >
-                <thead className="thead-dark">
-                  <tr>
-                    <th scope="col">Candidate</th>
-                    <th scope="col">Interviewer</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Time</th>
-                    <th scope="col" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {candidates.map((schedule) => (
-                    <tr key={schedule._id}>
-                      <th scope="row">
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            <Link
-                              to={`/admin/update-candidate/${schedule.candidateID._id}`}
-                              className="text-white"
-                            >
-                              {schedule.candidateID.Firstname}{" "}
-                              {schedule.candidateID.Lastname}
-                            </Link>
-                          </span>
-                        </Media>
-                      </th>
-                      <th>
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            <Link
-                              to={`/admin/update-user/${schedule.interviewer._id}`}
-                              className="text-white"
-                            >
-                              {schedule.interviewer.firstName}{" "}
-                              {schedule.interviewer.lastName}
-                            </Link>
-                          </span>
-                        </Media>
-                      </th>
-                      <td>
-                        {new Date(schedule.dateTime).toLocaleDateString()}
-                      </td>
-                      <td>
-                        {new Date(schedule.dateTime).toLocaleTimeString()}
-                      </td>
-                      <td className="text-center pr-4 pl-0 ">
-                        <UncontrolledDropdown>
-                          <DropdownToggle
-                            className="btn-icon-only text-light"
-                            href="#pablo"
-                            role="button"
-                            size="sm"
-                            color=""
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            <i className="fas fa-ellipsis-v" />
-                          </DropdownToggle>
-                          <DropdownMenu className="dropdown-menu-arrow" right>
-                            <DropdownItem
-                              href="#pablo"
-                              onClick={(e) => deleteCandidate(e, schedule._id)}
-                            >
-                              Delete
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </Card>
-          </div>
-        </Row>
-      </Container>
-    </>
-  );
-};
-
-export default Index;

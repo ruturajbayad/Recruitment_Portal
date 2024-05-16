@@ -24,6 +24,7 @@ import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 
 const Header = () => {
   const [users, setUsers] = useState([]);
+  const [candidates, setCandidates] = useState([]);
   useEffect(() => {
     const fatchData = async () => {
       try {
@@ -33,6 +34,13 @@ const Header = () => {
             withCredentials: true,
           }
         );
+        const response2 = await axios.get(
+          "http://localhost:4000/api/v1/candidates/show-candidate",
+          {
+            withCredentials: true,
+          }
+        );
+        setCandidates(response2.data.data);
         const result = response.data.data;
         setUsers(result);
       } catch (error) {
@@ -118,7 +126,9 @@ const Header = () => {
                         >
                           Total Candidates
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">924</span>
+                        <span className="h2 font-weight-bold mb-0">
+                          {candidates.length}
+                        </span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">
@@ -126,12 +136,6 @@ const Header = () => {
                         </div>
                       </Col>
                     </Row>
-                    {/* <p className="mt-3 mb-0 text-muted text-sm">
-                      <span className="text-warning mr-2">
-                        <i className="fas fa-arrow-down" /> 1.10%
-                      </span>{" "}
-                      <span className="text-nowrap">Since yesterday</span>
-                    </p> */}
                   </CardBody>
                 </Card>
               </Col>

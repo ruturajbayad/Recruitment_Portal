@@ -6,6 +6,8 @@ import { Candidate } from "../models/candidate.model.js";
 import { User } from "../models/user.model.js";
 import { UserDepartment } from "../models/userDepartment.model.js";
 import { CandidateDepartment } from "../models/candidateDepartment.model.js";
+import { scheduleMailerforCandidate } from "../utils/scheduleMailer.js";
+import { scheduleMailerforInterviewer } from "../utils/scheduleMailerForUser.js";
 
 const createCandidateInterviewSchedule = asyncHandler(async (req, res) => {
   const { candidateID, interviewer, round, dateTime } = req.body;
@@ -21,6 +23,7 @@ const createCandidateInterviewSchedule = asyncHandler(async (req, res) => {
 
   // Check if candidate with provided ID exists
   const candidate = await Candidate.findById(candidateID);
+
   if (!candidate) {
     throw new ApiError(404, "Candidate not found");
   }
@@ -43,6 +46,30 @@ const createCandidateInterviewSchedule = asyncHandler(async (req, res) => {
 
   if (!candidateInterviewSchedule) {
     throw new ApiError(500, "Failed to create schedule");
+  }
+  const nameOfCandidate = candidate.Firstname + " " + candidate.Lastname;
+  const nameOfInterviewer = user.firstName + " " + user.lastName;
+  const response = scheduleMailerforCandidate(
+    candidate.email,
+    new Date(dateTime).toLocaleDateString(),
+    new Date(dateTime).toLocaleTimeString(),
+    nameOfCandidate
+  );
+
+  if (!response) {
+    throw new ApiError(500, "Something went wrong with password reset link");
+  }
+
+  const response2 = scheduleMailerforInterviewer(
+    user.email,
+    new Date(dateTime).toLocaleDateString(),
+    new Date(dateTime).toLocaleTimeString(),
+    nameOfCandidate,
+    nameOfInterviewer
+  );
+
+  if (!response2) {
+    throw new ApiError(500, "Something went wrong with password reset link");
   }
 
   return res
